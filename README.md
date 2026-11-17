@@ -1,5 +1,8 @@
 # MiniCPU-8
 
+**CMPE-220 – Systems Software** · Instructor: Prof. Eswar, Ishie
+**Contributors:** Revati Dharmadhikari, Renuka Patwari, Atharva Mokashi
+
 An 8-bit educational CPU with its own 16-bit ISA, a two-pass assembler, and a
 step-by-step simulator that prints the registers, flags, and a RAM block after
 **every** instruction.

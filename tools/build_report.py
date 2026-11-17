@@ -47,16 +47,15 @@ rl_config.invariant = 1          # reproducible PDF bytes (no timestamps)
 # ==========================================================================
 TITLE = "CPU Design & Simulation"
 CPU_NAME = "MiniCPU-8"
-COURSE = "[COURSE CODE] – [Course Title]"
+SUBJECT = "CMPE-220 – Systems Software"
 ASSIGNMENT = "CPU Design & Simulation (own CPU, own ISA, simulator)"
-INSTRUCTOR = "[Instructor Name]"
-TEAM_NAME = "[Team Name]"
+INSTRUCTOR = "Prof. Eswar, Ishie"
 DATE = "November 2026"
 REPO_URL = "https://github.com/Revati-sp/CPU-Design.git"
-MEMBERS = (                                # (name, student ID)
-    ("[Member 1 Name]", "[Student ID]"),
-    ("[Member 2 Name]", "[Student ID]"),
-    ("[Member 3 Name]", "[Student ID]"),
+MEMBERS = (                                # project contributors
+    "Revati Dharmadhikari",
+    "Renuka Patwari",
+    "Atharva Mokashi",
 )
 CONTRIBUTIONS = (                          # one row per member, same order
     ("ISA & assembler",
@@ -476,7 +475,7 @@ class NumberedCanvas(canvas.Canvas):
             self.setFont(SANS, 7.5)
             self.drawString(MARGIN, PAGE_H - 32,
                             "%s  |  %s" % (CPU_NAME, TITLE))
-            self.drawRightString(PAGE_W - MARGIN, PAGE_H - 32, TEAM_NAME)
+            self.drawRightString(PAGE_W - MARGIN, PAGE_H - 32, SUBJECT)
 
 
 # ==========================================================================
@@ -498,23 +497,21 @@ def title_page(results, total_tests):
                         tag),
               Spacer(1, 34)]
 
-    info = [[c("<b>Course</b>"), c(p(COURSE))],
+    info = [[c("<b>Subject</b>"), c(p(SUBJECT))],
             [c("<b>Assignment</b>"), c(p(ASSIGNMENT))],
             [c("<b>Instructor</b>"), c(p(INSTRUCTOR))],
-            [c("<b>Team</b>"), c(p(TEAM_NAME))],
             [c("<b>Date</b>"), c(p(DATE))]]
     story.append(tab_caption("Submission Details"))
     story.append(grid_table(info, [110, 300], header_rows=0, zebra=False,
                             extra=[("BACKGROUND", (0, 0), (0, -1), ZEBRA)]))
     story.append(Spacer(1, 22))
 
-    story.append(tab_caption("Team Members"))
-    rows = [hd("#", "Name", "Student ID", "Role (details: Section 10)")]
-    for i, ((name, sid), (role, _, _)) in enumerate(zip(MEMBERS,
-                                                        CONTRIBUTIONS), 1):
-        rows.append([c(str(i), "cellc"), c(p(name)), c(p(sid), "cellc"),
+    story.append(tab_caption("Project Contributors"))
+    rows = [hd("#", "Name", "Role (details: Section 10)")]
+    for i, (name, (role, _, _)) in enumerate(zip(MEMBERS, CONTRIBUTIONS), 1):
+        rows.append([c(str(i), "cellc"), c("<b>%s</b>" % p(name)),
                      c(p(role))])
-    story.append(grid_table(rows, [24, 150, 90, 146]))
+    story.append(grid_table(rows, [24, 190, 196]))
     story.append(Spacer(1, 22))
 
     _, _, _, va, _ = results["A"]
@@ -973,7 +970,7 @@ def team_page():
     story = h1("10. Team Contributions")
     story.append(tab_caption("Team Contributions (specific work items)"))
     rows = [hd("Member", "Area", "Specific contribution", "Files")]
-    for (name, _), (role, what, files) in zip(MEMBERS, CONTRIBUTIONS):
+    for name, (role, what, files) in zip(MEMBERS, CONTRIBUTIONS):
         rows.append([c("<b>%s</b>" % p(name)), c(p(role)), c(p(what)),
                      mono_lines(files.split(", "))])
     story.append(grid_table(rows, [80, 70, 190, 120], extra=[
@@ -1014,7 +1011,7 @@ def main():
                             leftMargin=MARGIN, rightMargin=MARGIN,
                             topMargin=48, bottomMargin=48,
                             title="%s — %s" % (CPU_NAME, TITLE),
-                            author=TEAM_NAME,
+                            author=", ".join(MEMBERS),
                             subject="CPU design, ISA, assembler and "
                                     "simulator report")
     doc.build(story, canvasmaker=NumberedCanvas)
