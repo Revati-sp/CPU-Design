@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="512" height="372" preserveAspectRatio="xMinYMin meet" viewBox="0 0 512 372" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="512" height="372"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-372)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="8" y="52" width="122" height="268" rx="4" ry="4" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 1.2; fill: rgb(91%,94%,98%); fill-rule: evenodd;"/>
+			<text x="56.474609375" y="304" style="font-family: R-Bold; font-size: 11px;fill: rgb(12%,22%,37%); stroke:none;" transform="translate(0,608) scale(1,-1)">RAM</text>
+			<text x="37.2061767578125" y="293" style="font-family: R-Sans; font-size: 6.5px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,586) scale(1,-1)">256 bytes  (8-bit addr)</text>
+			<rect x="18" y="195" width="102" height="90" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.6; fill: rgb(91%,94%,98%); fill-rule: evenodd;"/>
+			<text x="22" y="237.5" style="font-family: R-Mono; font-size: 6.2px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,475) scale(1,-1)">0x00-0x7F</text>
+			<text x="102.55556640625" y="237.5" style="font-family: R-Sans; font-size: 6.2px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,475) scale(1,-1)">code</text>
+			<rect x="18" y="139" width="102" height="56" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.6; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="22" y="164.5" style="font-family: R-Mono; font-size: 6.2px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,329) scale(1,-1)">0x80-0xEF</text>
+			<text x="91.526953125" y="164.5" style="font-family: R-Sans; font-size: 6.2px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,329) scale(1,-1)">free data</text>
+			<rect x="18" y="122" width="102" height="17" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.6; fill: rgb(87%,95%,89%); fill-rule: evenodd;"/>
+			<text x="22" y="128.0" style="font-family: R-Mono; font-size: 6.2px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,256) scale(1,-1)">0xF0</text>
+			<text x="100.8390625" y="128.0" style="font-family: R-Sans; font-size: 6.2px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,256) scale(1,-1)">result</text>
+			<rect x="18" y="105" width="102" height="17" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.6; fill: rgb(100%,95%,83%); fill-rule: evenodd;"/>
+			<text x="22" y="111.0" style="font-family: R-Mono; font-size: 6.2px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,222) scale(1,-1)">0xF1</text>
+			<text x="84.98789062499999" y="111.0" style="font-family: R-Sans; font-size: 6.2px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,222) scale(1,-1)">input (x / n)</text>
+			<rect x="18" y="88" width="102" height="17" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.6; fill: rgb(100%,95%,83%); fill-rule: evenodd;"/>
+			<text x="22" y="94.0" style="font-family: R-Mono; font-size: 6.2px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,188) scale(1,-1)">0xF2</text>
+			<text x="79.1390625" y="94.0" style="font-family: R-Sans; font-size: 6.2px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,188) scale(1,-1)">i (Program B)</text>
+			<rect x="18" y="74" width="102" height="14" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.6; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="22" y="78.5" style="font-family: R-Mono; font-size: 6.2px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,157) scale(1,-1)">0xF3-0xFF</text>
+			<text x="100.49091796875" y="78.5" style="font-family: R-Sans; font-size: 6.2px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,157) scale(1,-1)">spare</text>
+			<text x="41.343701171875" y="60" style="font-family: R-Sans; font-size: 6.2px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,120) scale(1,-1)">instruction = 2 bytes</text>
+			<rect x="196" y="290" width="104" height="36" rx="4" ry="4" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 1.2; fill: rgb(93%,95%,97%); fill-rule: evenodd;"/>
+			<text x="241.05419921875" y="312" style="font-family: R-Bold; font-size: 10px;fill: rgb(12%,22%,37%); stroke:none;" transform="translate(0,624) scale(1,-1)">PC</text>
+			<text x="220.2750244140625" y="298" style="font-family: R-Sans; font-size: 6.5px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,596) scale(1,-1)">8-bit, PC ← PC + 2</text>
+			<rect x="196" y="200" width="104" height="50" rx="4" ry="4" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 1.2; fill: rgb(93%,95%,97%); fill-rule: evenodd;"/>
+			<text x="226.0009765625" y="236" style="font-family: R-Bold; font-size: 9px;fill: rgb(12%,22%,37%); stroke:none;" transform="translate(0,472) scale(1,-1)">IR  (16-bit)</text>
+			<rect x="202" y="207" width="30" height="18" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.6; fill: rgb(96%,75%,46%); fill-rule: evenodd;"/>
+			<text x="213.086669921875" y="213" style="font-family: R-Mono; font-size: 6.5px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,426) scale(1,-1)">op</text>
+			<rect x="232" y="207" width="15" height="18" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.6; fill: rgb(61%,81%,84%); fill-rule: evenodd;"/>
+			<text x="235.586669921875" y="213" style="font-family: R-Mono; font-size: 6.5px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,426) scale(1,-1)">ra</text>
+			<rect x="247" y="207" width="15" height="18" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.6; fill: rgb(76%,65%,90%); fill-rule: evenodd;"/>
+			<text x="250.586669921875" y="213" style="font-family: R-Mono; font-size: 6.5px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,426) scale(1,-1)">rb</text>
+			<rect x="262" y="207" width="32" height="18" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.6; fill: rgb(65%,85%,58%); fill-rule: evenodd;"/>
+			<text x="270.17333984375" y="213" style="font-family: R-Mono; font-size: 6.5px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,426) scale(1,-1)">imm8</text>
+			<rect x="352" y="196" width="152" height="74" rx="4" ry="4" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 1.2; fill: rgb(100%,95%,87%); fill-rule: evenodd;"/>
+			<text x="390.2265625" y="254" style="font-family: R-Bold; font-size: 10px;fill: rgb(12%,22%,37%); stroke:none;" transform="translate(0,508) scale(1,-1)">CONTROL UNIT</text>
+			<text x="398.427734375" y="241" style="font-family: R-Sans; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,482) scale(1,-1)">instruction decoder</text>
+			<text x="381.0400390625" y="229" style="font-family: R-Mono; font-size: 6.5px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,458) scale(1,-1)">FETCH → DECODE → EXECUTE</text>
+			<text x="383.80712890625" y="216" style="font-family: R-Sans; font-size: 6px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,432) scale(1,-1)">faults: bad opcode / reserved bits</text>
+			<text x="408.65673828125" y="206" style="font-family: R-Sans; font-size: 6px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,412) scale(1,-1)">step limit 1000</text>
+			<rect x="196" y="66" width="104" height="104" rx="4" ry="4" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 1.2; fill: rgb(90%,96%,92%); fill-rule: evenodd;"/>
+			<text x="215.8863525390625" y="156" style="font-family: R-Bold; font-size: 8.5px;fill: rgb(12%,22%,37%); stroke:none;" transform="translate(0,312) scale(1,-1)">REGISTER FILE</text>
+			<rect x="212" y="130" width="72" height="16" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.6; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="227.206298828125" y="134.5" style="font-family: R-Bold; font-size: 7.5px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,269) scale(1,-1)">R0</text>
+			<text x="255.8570556640625" y="134.5" style="font-family: R-Sans; font-size: 6.5px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,269) scale(1,-1)">8 bit</text>
+			<rect x="212" y="111" width="72" height="16" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.6; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="227.206298828125" y="115.5" style="font-family: R-Bold; font-size: 7.5px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,231) scale(1,-1)">R1</text>
+			<text x="255.8570556640625" y="115.5" style="font-family: R-Sans; font-size: 6.5px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,231) scale(1,-1)">8 bit</text>
+			<rect x="212" y="92" width="72" height="16" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.6; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="227.206298828125" y="96.5" style="font-family: R-Bold; font-size: 7.5px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,193) scale(1,-1)">R2</text>
+			<text x="255.8570556640625" y="96.5" style="font-family: R-Sans; font-size: 6.5px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,193) scale(1,-1)">8 bit</text>
+			<rect x="212" y="73" width="72" height="16" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.6; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="227.206298828125" y="77.5" style="font-family: R-Bold; font-size: 7.5px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,155) scale(1,-1)">R3</text>
+			<text x="255.8570556640625" y="77.5" style="font-family: R-Sans; font-size: 6.5px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,155) scale(1,-1)">8 bit</text>
+			<polygon points="352 166, 352 126, 366 116, 352 106, 352 66, 436 92, 436 140" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 1.2; fill: rgb(99%,92%,92%); fill-rule: evenodd;"/>
+			<text x="386.696533203125" y="128" style="font-family: R-Bold; font-size: 11px;fill: rgb(12%,22%,37%); stroke:none;" transform="translate(0,256) scale(1,-1)">ALU</text>
+			<text x="378.13232421875" y="114" style="font-family: R-Mono; font-size: 6px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,228) scale(1,-1)">ADD SUB MUL</text>
+			<text x="378.13232421875" y="105" style="font-family: R-Mono; font-size: 6px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,210) scale(1,-1)">INC DEC CMP</text>
+			<text x="386.3251953125" y="93" style="font-family: R-Sans; font-size: 6px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,186) scale(1,-1)">mod 256</text>
+			<rect x="458" y="96" width="48" height="44" rx="4" ry="4" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 1.2; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="470.1396484375" y="127" style="font-family: R-Bold; font-size: 7px;fill: rgb(12%,22%,37%); stroke:none;" transform="translate(0,254) scale(1,-1)">FLAGS</text>
+			<rect x="463" y="102" width="18" height="16" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.6; fill: rgb(93%,95%,97%); fill-rule: evenodd;"/>
+			<rect x="483" y="102" width="18" height="16" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.6; fill: rgb(93%,95%,97%); fill-rule: evenodd;"/>
+			<text x="469.556640625" y="107" style="font-family: R-Bold; font-size: 8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,214) scale(1,-1)">Z</text>
+			<text x="489.111328125" y="107" style="font-family: R-Bold; font-size: 8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,214) scale(1,-1)">N</text>
+			<g transform="">
+				<polyline points="196 308, 130 308" style="stroke: rgb(12%,43%,81%); stroke-linecap: butt; stroke-width: 1.6; fill: None; fill-rule: evenodd;"/>
+				<polygon points="130 308, 138 303, 138 313" style="stroke: rgb(12%,43%,81%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(12%,43%,81%); fill-rule: evenodd;"/>
+			</g>
+			<g transform="">
+				<rect x="144.75" y="310" width="36.5" height="9.5" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+				<text x="148.54638671875" y="312" style="font-family: R-Sans; font-size: 6.5px;fill: rgb(12%,43%,81%); stroke:none;" transform="translate(0,624) scale(1,-1)">fetch addr</text>
+			</g>
+			<g transform="">
+				<polyline points="196 210, 130 210" style="stroke: rgb(12%,43%,81%); stroke-linecap: butt; stroke-width: 1.6; fill: None; fill-rule: evenodd;"/>
+				<polygon points="130 210, 138 205, 138 215" style="stroke: rgb(12%,43%,81%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(12%,43%,81%); fill-rule: evenodd;"/>
+			</g>
+			<g transform="">
+				<rect x="134.0" y="194" width="58.0" height="9" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+				<text x="133.158203125" y="196" style="font-family: R-Sans; font-size: 6px;fill: rgb(12%,43%,81%); stroke:none;" transform="translate(0,392) scale(1,-1)">addr8 (LOAD/STORE)</text>
+			</g>
+			<g transform="">
+				<polyline points="284 250, 284 290" style="stroke: rgb(12%,43%,81%); stroke-linecap: butt; stroke-width: 1.6; fill: None; fill-rule: evenodd;"/>
+				<polygon points="284 290, 279 282, 289 282" style="stroke: rgb(12%,43%,81%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(12%,43%,81%); fill-rule: evenodd;"/>
+			</g>
+			<g transform="">
+				<rect x="262.5" y="264" width="43.0" height="9" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+				<text x="265.4931640625" y="266" style="font-family: R-Sans; font-size: 6px;fill: rgb(12%,43%,81%); stroke:none;" transform="translate(0,532) scale(1,-1)">addr8 (jumps)</text>
+			</g>
+			<g transform="">
+				<polyline points="130 236, 196 236" style="stroke: rgb(11%,61%,35%); stroke-linecap: butt; stroke-width: 1.6; fill: None; fill-rule: evenodd;"/>
+				<polygon points="196 236, 188 241, 188 231" style="stroke: rgb(11%,61%,35%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(11%,61%,35%); fill-rule: evenodd;"/>
+			</g>
+			<g transform="">
+				<rect x="143.125" y="238" width="39.75" height="9.5" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+				<text x="148.187744140625" y="240" style="font-family: R-Sans; font-size: 6.5px;fill: rgb(11%,61%,35%); stroke:none;" transform="translate(0,480) scale(1,-1)">instruction</text>
+			</g>
+			<g transform="">
+				<polyline points="130 112, 196 112" style="stroke: rgb(11%,61%,35%); stroke-linecap: butt; stroke-width: 1.6; fill: None; fill-rule: evenodd;"/>
+				<polygon points="196 112, 188 117, 188 107" style="stroke: rgb(11%,61%,35%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(11%,61%,35%); fill-rule: evenodd;"/>
+				<polygon points="130 112, 138 107, 138 117" style="stroke: rgb(11%,61%,35%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(11%,61%,35%); fill-rule: evenodd;"/>
+			</g>
+			<g transform="">
+				<rect x="154.5" y="114" width="17.0" height="9.5" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+				<text x="156.674560546875" y="116" style="font-family: R-Sans; font-size: 6.5px;fill: rgb(11%,61%,35%); stroke:none;" transform="translate(0,232) scale(1,-1)">data</text>
+			</g>
+			<g transform="">
+				<rect x="143.0" y="98" width="40.0" height="9" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+				<text x="141.99560546875" y="100" style="font-family: R-Sans; font-size: 6px;fill: rgb(11%,61%,35%); stroke:none;" transform="translate(0,200) scale(1,-1)">LOAD / STORE</text>
+			</g>
+			<g transform="">
+				<polyline points="232 200, 232 170" style="stroke: rgb(11%,61%,35%); stroke-linecap: butt; stroke-width: 1.6; fill: None; fill-rule: evenodd;"/>
+				<polygon points="232 170, 237 178, 227 178" style="stroke: rgb(11%,61%,35%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(11%,61%,35%); fill-rule: evenodd;"/>
+			</g>
+			<g transform="">
+				<rect x="215.0" y="180" width="34.0" height="9" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+				<text x="217.1669921875" y="182" style="font-family: R-Sans; font-size: 6px;fill: rgb(11%,61%,35%); stroke:none;" transform="translate(0,364) scale(1,-1)">imm8 (LDI)</text>
+			</g>
+			<g transform="">
+				<polyline points="300 146, 352 146" style="stroke: rgb(11%,61%,35%); stroke-linecap: butt; stroke-width: 1.6; fill: None; fill-rule: evenodd;"/>
+				<polygon points="352 146, 344 151, 344 141" style="stroke: rgb(11%,61%,35%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(11%,61%,35%); fill-rule: evenodd;"/>
+			</g>
+			<g transform="">
+				<rect x="315.0" y="148" width="22.0" height="9" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+				<text x="316.7451171875" y="150" style="font-family: R-Sans; font-size: 6px;fill: rgb(11%,61%,35%); stroke:none;" transform="translate(0,300) scale(1,-1)">A = Ra</text>
+			</g>
+			<g transform="">
+				<polyline points="300 86, 352 86" style="stroke: rgb(11%,61%,35%); stroke-linecap: butt; stroke-width: 1.6; fill: None; fill-rule: evenodd;"/>
+				<polygon points="352 86, 344 91, 344 81" style="stroke: rgb(11%,61%,35%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(11%,61%,35%); fill-rule: evenodd;"/>
+			</g>
+			<g transform="">
+				<rect x="315.0" y="88" width="22.0" height="9" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+				<text x="316.7451171875" y="90" style="font-family: R-Sans; font-size: 6px;fill: rgb(11%,61%,35%); stroke:none;" transform="translate(0,180) scale(1,-1)">B = Rb</text>
+			</g>
+			<g transform="">
+				<polyline points="436 116, 458 116" style="stroke: rgb(11%,61%,35%); stroke-linecap: butt; stroke-width: 1.2; fill: None; fill-rule: evenodd;"/>
+				<polygon points="458 116, 450 121, 450 111" style="stroke: rgb(11%,61%,35%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(11%,61%,35%); fill-rule: evenodd;"/>
+			</g>
+			<g transform="">
+				<polyline points="446 116, 446 50, 248 50, 248 66" style="stroke: rgb(11%,61%,35%); stroke-linecap: butt; stroke-width: 1.6; fill: None; fill-rule: evenodd;"/>
+				<polygon points="248 66, 243 58, 253 58" style="stroke: rgb(11%,61%,35%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(11%,61%,35%); fill-rule: evenodd;"/>
+			</g>
+			<g transform="">
+				<rect x="327.0" y="44" width="40.0" height="9" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+				<text x="331.162109375" y="46" style="font-family: R-Sans; font-size: 6px;fill: rgb(11%,61%,35%); stroke:none;" transform="translate(0,92) scale(1,-1)">result → Ra</text>
+			</g>
+			<g transform="">
+				<polyline points="300 225, 352 225" style="stroke: rgb(47%,47%,47%); stroke-linecap: butt; stroke-width: 1.6; fill: None; fill-rule: evenodd; stroke-dasharray: 3, 2;"/>
+				<polygon points="352 225, 344 230, 344 220" style="stroke: rgb(47%,47%,47%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(47%,47%,47%); fill-rule: evenodd;"/>
+			</g>
+			<g transform="">
+				<rect x="312.0" y="227" width="28.0" height="9" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+				<text x="315.6611328125" y="229" style="font-family: R-Sans; font-size: 6px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,458) scale(1,-1)">op ra rb</text>
+			</g>
+			<g transform="">
+				<polyline points="397 196, 397 154" style="stroke: rgb(47%,47%,47%); stroke-linecap: butt; stroke-width: 1.6; fill: None; fill-rule: evenodd; stroke-dasharray: 3, 2;"/>
+				<polygon points="397 154, 402 162, 392 162" style="stroke: rgb(47%,47%,47%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(47%,47%,47%); fill-rule: evenodd;"/>
+			</g>
+			<g transform="">
+				<rect x="386.0" y="174" width="22.0" height="9" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+				<text x="386.99365234375" y="176" style="font-family: R-Sans; font-size: 6px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,352) scale(1,-1)">ALU op</text>
+			</g>
+			<g transform="">
+				<polyline points="482 140, 482 196" style="stroke: rgb(47%,47%,47%); stroke-linecap: butt; stroke-width: 1.6; fill: None; fill-rule: evenodd; stroke-dasharray: 3, 2;"/>
+				<polygon points="482 196, 477 188, 487 188" style="stroke: rgb(47%,47%,47%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(47%,47%,47%); fill-rule: evenodd;"/>
+			</g>
+			<g transform="">
+				<rect x="474.0" y="162" width="16.0" height="9" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+				<text x="476.333984375" y="164" style="font-family: R-Sans; font-size: 6px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,328) scale(1,-1)">Z, N</text>
+			</g>
+			<g transform="">
+				<polyline points="360 196, 360 182, 300 160" style="stroke: rgb(47%,47%,47%); stroke-linecap: butt; stroke-width: 1.6; fill: None; fill-rule: evenodd; stroke-dasharray: 3, 2;"/>
+				<polygon points="300 160, 309.2323 158.0597, 305.7897 167.4484" style="stroke: rgb(47%,47%,47%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(47%,47%,47%); fill-rule: evenodd;"/>
+			</g>
+			<g transform="">
+				<rect x="322.5" y="182" width="31.0" height="9" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+				<text x="326.49658203125" y="184" style="font-family: R-Sans; font-size: 6px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,368) scale(1,-1)">reg write</text>
+			</g>
+			<g transform="">
+				<polyline points="428 270, 428 308, 300 308" style="stroke: rgb(47%,47%,47%); stroke-linecap: butt; stroke-width: 1.6; fill: None; fill-rule: evenodd; stroke-dasharray: 3, 2;"/>
+				<polygon points="300 308, 308 303, 308 313" style="stroke: rgb(47%,47%,47%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(47%,47%,47%); fill-rule: evenodd;"/>
+			</g>
+			<g transform="">
+				<rect x="336.5" y="310" width="55.0" height="9" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+				<text x="340.66064453125" y="312" style="font-family: R-Sans; font-size: 6px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,624) scale(1,-1)">PC write (branch)</text>
+			</g>
+			<g transform="">
+				<polyline points="470 270, 470 336, 69 336, 69 320" style="stroke: rgb(47%,47%,47%); stroke-linecap: butt; stroke-width: 1.6; fill: None; fill-rule: evenodd; stroke-dasharray: 3, 2;"/>
+				<polygon points="69 320, 74 328, 64 328" style="stroke: rgb(47%,47%,47%); stroke-linecap: butt; stroke-width: 0.5; fill: rgb(47%,47%,47%); fill-rule: evenodd;"/>
+			</g>
+			<g transform="">
+				<rect x="244.0" y="338" width="52.0" height="9" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+				<text x="247.6611328125" y="340" style="font-family: R-Sans; font-size: 6px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,680) scale(1,-1)">RAM read / write</text>
+			</g>
+			<path d="M 150,13 L 174,13 Z" style="stroke: rgb(12%,43%,81%); stroke-linecap: butt; stroke-width: 2;"/>
+			<text x="180" y="10" style="font-family: R-Sans; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,20) scale(1,-1)">address bus</text>
+			<path d="M 270,13 L 294,13 Z" style="stroke: rgb(11%,61%,35%); stroke-linecap: butt; stroke-width: 2;"/>
+			<text x="300" y="10" style="font-family: R-Sans; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,20) scale(1,-1)">data / instruction bus</text>
+			<path d="M 390,13 L 414,13 Z" style="stroke: rgb(47%,47%,47%); stroke-linecap: butt; stroke-width: 2; stroke-dasharray: 3, 2;"/>
+			<text x="420" y="10" style="font-family: R-Sans; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,20) scale(1,-1)">control / status</text>
+		</g>
+	</g>
+</svg>

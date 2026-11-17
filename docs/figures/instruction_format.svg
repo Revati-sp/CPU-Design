@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="512" height="168" preserveAspectRatio="xMinYMin meet" viewBox="0 0 512 168" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="512" height="168"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-168)" style="clip-path: url(#clip)">
+		<g transform="">
+			<text x="42.10693359375" y="148" style="font-family: R-Sans; font-size: 7px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,296) scale(1,-1)">15</text>
+			<text x="70.10693359375" y="148" style="font-family: R-Sans; font-size: 7px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,296) scale(1,-1)">14</text>
+			<text x="98.10693359375" y="148" style="font-family: R-Sans; font-size: 7px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,296) scale(1,-1)">13</text>
+			<text x="126.10693359375" y="148" style="font-family: R-Sans; font-size: 7px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,296) scale(1,-1)">12</text>
+			<text x="154.10693359375" y="148" style="font-family: R-Sans; font-size: 7px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,296) scale(1,-1)">11</text>
+			<text x="182.10693359375" y="148" style="font-family: R-Sans; font-size: 7px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,296) scale(1,-1)">10</text>
+			<text x="212.053466796875" y="148" style="font-family: R-Sans; font-size: 7px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,296) scale(1,-1)">9</text>
+			<text x="240.053466796875" y="148" style="font-family: R-Sans; font-size: 7px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,296) scale(1,-1)">8</text>
+			<text x="268.053466796875" y="148" style="font-family: R-Sans; font-size: 7px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,296) scale(1,-1)">7</text>
+			<text x="296.053466796875" y="148" style="font-family: R-Sans; font-size: 7px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,296) scale(1,-1)">6</text>
+			<text x="324.053466796875" y="148" style="font-family: R-Sans; font-size: 7px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,296) scale(1,-1)">5</text>
+			<text x="352.053466796875" y="148" style="font-family: R-Sans; font-size: 7px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,296) scale(1,-1)">4</text>
+			<text x="380.053466796875" y="148" style="font-family: R-Sans; font-size: 7px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,296) scale(1,-1)">3</text>
+			<text x="408.053466796875" y="148" style="font-family: R-Sans; font-size: 7px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,296) scale(1,-1)">2</text>
+			<text x="436.053466796875" y="148" style="font-family: R-Sans; font-size: 7px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,296) scale(1,-1)">1</text>
+			<text x="464.053466796875" y="148" style="font-family: R-Sans; font-size: 7px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,296) scale(1,-1)">0</text>
+			<rect x="32" y="122" width="112" height="20" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 1.6; fill: rgb(96%,75%,46%); fill-rule: evenodd;"/>
+			<rect x="144" y="122" width="56" height="20" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 1.6; fill: rgb(61%,81%,84%); fill-rule: evenodd;"/>
+			<rect x="200" y="122" width="56" height="20" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 1.6; fill: rgb(76%,65%,90%); fill-rule: evenodd;"/>
+			<rect x="256" y="122" width="224" height="20" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 1.6; fill: rgb(65%,85%,58%); fill-rule: evenodd;"/>
+			<text x="72.888427734375" y="128" style="font-family: R-Bold; font-size: 8.5px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,256) scale(1,-1)">opcode</text>
+			<text x="68.852294921875" y="110" style="font-family: R-Sans; font-size: 6.5px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,220) scale(1,-1)">bits 15-12 (4)</text>
+			<text x="167.982421875" y="128" style="font-family: R-Bold; font-size: 8.5px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,256) scale(1,-1)">ra</text>
+			<text x="152.852294921875" y="110" style="font-family: R-Sans; font-size: 6.5px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,220) scale(1,-1)">bits 11-10 (2)</text>
+			<text x="223.75" y="128" style="font-family: R-Bold; font-size: 8.5px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,256) scale(1,-1)">rb</text>
+			<text x="212.46728515625" y="110" style="font-family: R-Sans; font-size: 6.5px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,220) scale(1,-1)">bits 9-8 (2)</text>
+			<text x="341.781982421875" y="128" style="font-family: R-Bold; font-size: 8.5px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,256) scale(1,-1)">imm8 / addr8</text>
+			<text x="352.46728515625" y="110" style="font-family: R-Sans; font-size: 6.5px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,220) scale(1,-1)">bits 7-0 (8)</text>
+			<text x="32" y="86" style="font-family: R-Bold; font-size: 8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,172) scale(1,-1)">Example:  ADD R1, R2  =  0x5600</text>
+			<rect x="32" y="58" width="112" height="20" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 1.6; fill: rgb(96%,75%,46%); fill-rule: evenodd;"/>
+			<path d="M 60,58 L 60,78 Z" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.5;"/>
+			<path d="M 88,58 L 88,78 Z" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.5;"/>
+			<path d="M 116,58 L 116,78 Z" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.5;"/>
+			<rect x="144" y="58" width="56" height="20" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 1.6; fill: rgb(61%,81%,84%); fill-rule: evenodd;"/>
+			<path d="M 172,58 L 172,78 Z" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.5;"/>
+			<rect x="200" y="58" width="56" height="20" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 1.6; fill: rgb(76%,65%,90%); fill-rule: evenodd;"/>
+			<path d="M 228,58 L 228,78 Z" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.5;"/>
+			<rect x="256" y="58" width="224" height="20" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 1.6; fill: rgb(65%,85%,58%); fill-rule: evenodd;"/>
+			<path d="M 284,58 L 284,78 Z" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.5;"/>
+			<path d="M 312,58 L 312,78 Z" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.5;"/>
+			<path d="M 340,58 L 340,78 Z" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.5;"/>
+			<path d="M 368,58 L 368,78 Z" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.5;"/>
+			<path d="M 396,58 L 396,78 Z" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.5;"/>
+			<path d="M 424,58 L 424,78 Z" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.5;"/>
+			<path d="M 452,58 L 452,78 Z" style="stroke: rgb(12%,22%,37%); stroke-linecap: butt; stroke-width: 0.5;"/>
+			<text x="43.290771484375" y="64" style="font-family: R-Mono; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,128) scale(1,-1)">0</text>
+			<text x="71.290771484375" y="64" style="font-family: R-Mono; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,128) scale(1,-1)">1</text>
+			<text x="99.290771484375" y="64" style="font-family: R-Mono; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,128) scale(1,-1)">0</text>
+			<text x="127.290771484375" y="64" style="font-family: R-Mono; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,128) scale(1,-1)">1</text>
+			<text x="155.290771484375" y="64" style="font-family: R-Mono; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,128) scale(1,-1)">0</text>
+			<text x="183.290771484375" y="64" style="font-family: R-Mono; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,128) scale(1,-1)">1</text>
+			<text x="211.290771484375" y="64" style="font-family: R-Mono; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,128) scale(1,-1)">1</text>
+			<text x="239.290771484375" y="64" style="font-family: R-Mono; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,128) scale(1,-1)">0</text>
+			<text x="267.290771484375" y="64" style="font-family: R-Mono; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,128) scale(1,-1)">0</text>
+			<text x="295.290771484375" y="64" style="font-family: R-Mono; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,128) scale(1,-1)">0</text>
+			<text x="323.290771484375" y="64" style="font-family: R-Mono; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,128) scale(1,-1)">0</text>
+			<text x="351.290771484375" y="64" style="font-family: R-Mono; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,128) scale(1,-1)">0</text>
+			<text x="379.290771484375" y="64" style="font-family: R-Mono; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,128) scale(1,-1)">0</text>
+			<text x="407.290771484375" y="64" style="font-family: R-Mono; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,128) scale(1,-1)">0</text>
+			<text x="435.290771484375" y="64" style="font-family: R-Mono; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,128) scale(1,-1)">0</text>
+			<text x="463.290771484375" y="64" style="font-family: R-Mono; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,128) scale(1,-1)">0</text>
+			<text x="70.978515625" y="46" style="font-family: R-Sans; font-size: 7px;fill: rgb(12%,22%,37%); stroke:none;" transform="translate(0,92) scale(1,-1)">ADD = 0x5</text>
+			<text x="167.52587890625" y="46" style="font-family: R-Sans; font-size: 7px;fill: rgb(12%,22%,37%); stroke:none;" transform="translate(0,92) scale(1,-1)">R1</text>
+			<text x="223.52587890625" y="46" style="font-family: R-Sans; font-size: 7px;fill: rgb(12%,22%,37%); stroke:none;" transform="translate(0,92) scale(1,-1)">R2</text>
+			<text x="335.70361328125" y="46" style="font-family: R-Sans; font-size: 7px;fill: rgb(12%,22%,37%); stroke:none;" transform="translate(0,92) scale(1,-1)">unused → must be 0</text>
+			<text x="32" y="22" style="font-family: R-Sans; font-size: 6.8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,44) scale(1,-1)">Register code:  00 = R0   01 = R1   10 = R2   11 = R3          Byte order: big-endian (RAM[PC] = bits 15-8, RAM[PC+1] = bits 7-0)</text>
+			<text x="32" y="8" style="font-family: R-Sans; font-size: 6.8px;fill: rgb(47%,47%,47%); stroke:none;" transform="translate(0,16) scale(1,-1)">Unused fields must be zero; the decoder rejects any other value, so every word has exactly one meaning.</text>
+		</g>
+	</g>
+</svg>

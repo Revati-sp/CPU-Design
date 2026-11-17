@@ -1,0 +1,80 @@
+==============================================================================
+MiniCPU-8 EXECUTION TRACE : programs/square8.asm
+==============================================================================
+
+ASSEMBLY LISTING (machine code produced by assembler.py)
+ADDR  WORD  op   ra rb imm         LABEL    STATEMENT           ; COMMENT
+----  ----  ---------------------  -------  ------------------  --------------------------
+0x00  20F1  0010 00 00 11110001    start:   LOAD R0, [x]        ; R0 <- RAM[0xF1]   (R0 = 8)
+0x02  4400  0100 01 00 00000000             MOV R1, R0          ; R1 <- R0          (R1 = 8)
+0x04  7100  0111 00 01 00000000             MUL R0, R1          ; R0 <- R0 * R1     (R0 = 64)
+0x06  30F0  0011 00 00 11110000             STORE R0, [result]  ; RAM[0xF0] <- R0   (result = 64)
+0x08  F000  1111 00 00 00000000             HALT                ; stop
+0xF0  00    (data)                 result:  .byte 0             ; result (written by STORE)
+0xF1  08    (data)                 x:       .byte 8             ; input operand x = 8
+
+INITIAL STATE
+  Registers : R0=0x00 (0)    R1=0x00 (0)    R2=0x00 (0)    R3=0x00 (0)
+  Flags     : Z=0 N=0   PC: 0x00
+  RAM block before execution:
+        +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F
+  0x00: 20 F1 44 00 71 00 30 F0 F0 00 00 00 00 00 00 00
+  0xF0: 00 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+Legend: '*' = changed by this instruction.  All values hex unless shown in (decimal).
+------------------------------------------------------------------------------
+STEP 01 | PC 0x00 | IR 0x20F1 = 0010 00 00 11110001 | LOAD R0, [0xF1]
+  Registers : R0=0x08 (8)*   R1=0x00 (0)    R2=0x00 (0)    R3=0x00 (0)
+  Flags     : Z=0 N=0   Next PC: 0x02
+  RAM write : none
+  RAM block after execution:
+        +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F
+  0x00: 20 F1 44 00 71 00 30 F0 F0 00 00 00 00 00 00 00
+  0xF0: 00 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+------------------------------------------------------------------------------
+STEP 02 | PC 0x02 | IR 0x4400 = 0100 01 00 00000000 | MOV R1, R0
+  Registers : R0=0x08 (8)    R1=0x08 (8)*   R2=0x00 (0)    R3=0x00 (0)
+  Flags     : Z=0 N=0   Next PC: 0x04
+  RAM write : none
+  RAM block after execution:
+        +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F
+  0x00: 20 F1 44 00 71 00 30 F0 F0 00 00 00 00 00 00 00
+  0xF0: 00 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+------------------------------------------------------------------------------
+STEP 03 | PC 0x04 | IR 0x7100 = 0111 00 01 00000000 | MUL R0, R1
+  Registers : R0=0x40 (64)*  R1=0x08 (8)    R2=0x00 (0)    R3=0x00 (0)
+  Flags     : Z=0 N=0   Next PC: 0x06
+  RAM write : none
+  RAM block after execution:
+        +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F
+  0x00: 20 F1 44 00 71 00 30 F0 F0 00 00 00 00 00 00 00
+  0xF0: 00 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+------------------------------------------------------------------------------
+STEP 04 | PC 0x06 | IR 0x30F0 = 0011 00 00 11110000 | STORE R0, [0xF0]
+  Registers : R0=0x40 (64)   R1=0x08 (8)    R2=0x00 (0)    R3=0x00 (0)
+  Flags     : Z=0 N=0   Next PC: 0x08
+  RAM write : [0xF0] 0x00 -> 0x40
+  RAM block after execution:
+        +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F
+  0x00: 20 F1 44 00 71 00 30 F0 F0 00 00 00 00 00 00 00
+  0xF0: 40*08 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+------------------------------------------------------------------------------
+STEP 05 | PC 0x08 | IR 0xF000 = 1111 00 00 00000000 | HALT
+  Registers : R0=0x40 (64)   R1=0x08 (8)    R2=0x00 (0)    R3=0x00 (0)
+  Flags     : Z=0 N=0   Next PC: 0x08   (HALTED)
+  RAM write : none
+  RAM block after execution:
+        +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F
+  0x00: 20 F1 44 00 71 00 30 F0 F0 00 00 00 00 00 00 00
+  0xF0: 40 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+------------------------------------------------------------------------------
+HALT reached after 5 instructions.
+
+==============================================================================
+PROGRAM A -- FINAL STATE
+  RESULT ADDRESS : 0xF0
+  RAM[0xF0]      : 0x40
+  DECIMAL        : 64
+  EXPECTED       : 64   (8^2 = 64)
+  STATUS         : PASS
+==============================================================================
