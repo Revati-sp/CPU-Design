@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MiniCPU-8 — CPU Design &amp; Simulation</title>
+<style>
+  @page {
+    size: letter;
+    margin: 0.65in 0.6in 0.7in 0.6in;
+    @top-left   { content: "MiniCPU-8 | CPU Design & Simulation"; font: 8pt Helvetica, Arial, sans-serif; color: #5F6B7A; }
+    @top-right  { content: "CMPE-220 – Systems Software"; font: 8pt Helvetica, Arial, sans-serif; color: #5F6B7A; }
+    @bottom-center {
+      content: counter(page, decimal-leading-zero) "/" counter(pages, decimal-leading-zero);
+      font: bold 9pt Helvetica, Arial, sans-serif; color: #1F3A5F;
+    }
+  }
+  @page :first { @top-left { content: none; } @top-right { content: none; } }
+
+  :root { --navy: #1F3A5F; --grid: #B8C4D2; --zebra: #F4F7FA; --gray: #5F6B7A; --code: #F6F8FA; --chg: #FFE08A; }
+  * { box-sizing: border-box; }
+  body { font: 9.5pt/1.35 Helvetica, Arial, sans-serif; color: #1b1f24; margin: 0; }
+  h1 { font-size: 15pt; color: var(--navy); margin: 0 0 8pt; border-bottom: 1.5pt solid var(--navy); padding-bottom: 3pt; }
+  h2 { font-size: 11pt; color: var(--navy); margin: 12pt 0 4pt; }
+  section { break-before: page; }
+  .keep { break-inside: avoid; }
+  p.note { font-size: 8.2pt; color: var(--gray); margin: 3pt 0 8pt; }
+
+  figure { margin: 6pt 0 10pt; break-inside: avoid; }
+  figcaption, .tcap { font-style: italic; color: var(--navy); font-size: 8.8pt; text-align: center; margin: 4pt 0; }
+  .tcap { margin: 8pt 0 4pt; }
+
+  table { border-collapse: collapse; width: 100%; font-size: 8.4pt; break-inside: avoid; }
+  th { background: var(--navy); color: #fff; font-weight: bold; padding: 3.5pt 5pt; text-align: left; }
+  td { padding: 3pt 5pt; border-bottom: 0.6pt solid var(--grid); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--zebra); }
+  td.m, .m { font-family: Menlo, Consolas, monospace; font-size: 7.9pt; }
+  td.c, th.c { text-align: center; }
+  table.box { border: 0.8pt solid var(--grid); }
+
+  pre { font: 7.3pt/1.22 Menlo, Consolas, monospace; background: var(--code); border: 0.6pt solid #DCE2E8;
+        border-radius: 3pt; padding: 5pt 7pt; margin: 0 0 4pt; white-space: pre; overflow: hidden; }
+  pre { break-inside: avoid; }
+  pre .chg { background: var(--chg); font-weight: bold; }
+  pre .res { background: #CDEFD7; font-weight: bold; }
+  pre .cm { color: #6A737D; }
+
+  /* title page */
+  .title { text-align: center; padding-top: 1.1in; }
+  .title .big { font-size: 26pt; font-weight: bold; color: var(--navy); }
+  .title .cpu { font-size: 18pt; margin-top: 8pt; }
+  .title .sub { color: var(--gray); margin: 6pt 0 0.6in; font-size: 10.5pt; }
+  .title table { width: 78%; margin: 0 auto; font-size: 10pt; }
+  .title td { padding: 5pt 8pt; text-align: left; }
+  .title td.c { text-align: center; }
+  .title .names td { font-size: 12pt; font-weight: bold; }
+  .pass { color: #1E7B45; font-weight: bold; }
+
+  svg text { font-family: Helvetica, Arial, sans-serif; }
+  svg .mono { font-family: Menlo, Consolas, monospace; }
+</style>
+</head>
+<body>
+
+<!-- ======================================================= TITLE PAGE -->
+<div class="title">
+  <div class="big">CPU Design &amp; Simulation</div>
+  <div class="cpu">MiniCPU-8</div>
+  <div class="sub">8-bit CPU &nbsp;•&nbsp; own 16-bit ISA &nbsp;•&nbsp; clock-cycle simulator written in C</div>
+
+  <div class="tcap">Table 1. Team Members</div>
+  <table class="box names">
+    <tr><th class="c">#</th><th>Name</th></tr>
+    <tr><td class="c">1</td><td>Revati Dharmadhikari</td></tr>
+    <tr><td class="c">2</td><td>Renuka Patwari</td></tr>
+    <tr><td class="c">3</td><td>Atharva Mokashi</td></tr>
+  </table>
+
+  <div class="tcap" style="margin-top:22pt">Table 2. Submission Details</div>
+  <table class="box">
+    <tr><td><b>Course</b></td><td>CMPE-220 – Systems Software</td></tr>
+    <tr><td><b>Assignment</b></td><td>CPU Design &amp; Simulation</td></tr>
+    <tr><td><b>Instructor</b></td><td>Prof. Ishie Eswar</td></tr>
+    <tr><td><b>Date</b></td><td>November 2026</td></tr>
+    <tr><td><b>Code</b></td><td>C (C99), only <span class="m">printf</span> used from the library</td></tr>
+  </table>
+
+  <div class="tcap" style="margin-top:22pt">Table 3. Results (from the simulator run)</div>
+  <table class="box">
+    <tr><th>Program (C → hand-translated binary)</th><th>Result in RAM[0xF2]</th><th class="c">Status</th></tr>
+    <tr><td>1: c = a + b &nbsp;(40 + 25)</td><td class="m">01000001 = 0x41 = 65 = 'A'</td><td class="c pass"><!--@text:add_status--></td></tr>
+    <tr><td>2: c = a * b &nbsp;(8 × 9)</td><td class="m">01001000 = 0x48 = 72 = 'H'</td><td class="c pass"><!--@text:mul_status--></td></tr>
+    <tr><td>Automated tests (make test)</td><td class="m"><!--@text:tests--></td><td class="c pass">PASS</td></tr>
+  </table>
+</div>
+
+<!-- ======================================================= 1. ARCHITECTURE -->
+<section>
+<h1>1. CPU Architecture (CPU – Bus – RAM)</h1>
+<figure>
+<svg viewBox="0 0 540 345" width="100%">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1F3A5F"/></marker>
+    <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1E7B45"/></marker>
+    <marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#B5651D"/></marker>
+  </defs>
+
+  <!-- CPU -->
+  <rect x="8" y="22" width="282" height="300" rx="8" fill="#F4F7FA" stroke="#1F3A5F" stroke-width="2"/>
+  <text x="149" y="16" text-anchor="middle" font-size="13" font-weight="bold" fill="#1F3A5F">CPU</text>
+
+  <!-- flags -->
+  <rect x="22" y="40" width="118" height="70" rx="5" fill="#fff" stroke="#1F3A5F"/>
+  <text x="81" y="56" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#1F3A5F">FLAGS</text>
+  <rect x="40" y="66" width="34" height="30" fill="#FFF4D6" stroke="#B8C4D2"/><text x="57" y="86" text-anchor="middle" font-size="12" font-weight="bold">Z</text>
+  <rect x="88" y="66" width="34" height="30" fill="#FFF4D6" stroke="#B8C4D2"/><text x="105" y="86" text-anchor="middle" font-size="12" font-weight="bold">N</text>
+
+  <!-- control unit -->
+  <rect x="156" y="40" width="120" height="70" rx="5" fill="#fff" stroke="#1F3A5F"/>
+  <text x="216" y="56" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#1F3A5F">CONTROL UNIT</text>
+  <text x="216" y="70" text-anchor="middle" font-size="8">decoder + phase</text>
+  <path d="M178,96 h8 v-12 h12 v12 h12 v-12 h12 v12 h12 v-12 h12 v12 h8" fill="none" stroke="#B5651D" stroke-width="1.5"/>
+  <text x="216" y="106" text-anchor="middle" font-size="7.5" fill="#B5651D">CLOCK</text>
+
+  <!-- general registers -->
+  <rect x="22" y="124" width="118" height="122" rx="5" fill="#fff" stroke="#1F3A5F"/>
+  <text x="81" y="139" text-anchor="middle" font-size="9" font-weight="bold" fill="#1F3A5F">GENERAL-PURPOSE</text>
+  <g font-size="9.5">
+    <rect x="34" y="146" width="94" height="20" fill="#EAF1FB" stroke="#B8C4D2"/><text x="44" y="160" font-weight="bold">R0</text><text x="122" y="160" text-anchor="end" font-size="8" fill="#5F6B7A">8 bit</text>
+    <rect x="34" y="169" width="94" height="20" fill="#EAF1FB" stroke="#B8C4D2"/><text x="44" y="183" font-weight="bold">R1</text><text x="122" y="183" text-anchor="end" font-size="8" fill="#5F6B7A">8 bit</text>
+    <rect x="34" y="192" width="94" height="20" fill="#EAF1FB" stroke="#B8C4D2"/><text x="44" y="206" font-weight="bold">R2</text><text x="122" y="206" text-anchor="end" font-size="8" fill="#5F6B7A">8 bit</text>
+    <rect x="34" y="215" width="94" height="20" fill="#EAF1FB" stroke="#B8C4D2"/><text x="44" y="229" font-weight="bold">R3</text><text x="122" y="229" text-anchor="end" font-size="8" fill="#5F6B7A">8 bit</text>
+  </g>
+
+  <!-- special registers -->
+  <rect x="156" y="124" width="120" height="122" rx="5" fill="#fff" stroke="#1F3A5F"/>
+  <text x="216" y="139" text-anchor="middle" font-size="9" font-weight="bold" fill="#1F3A5F">SPECIAL-PURPOSE</text>
+  <g font-size="9.5">
+    <rect x="168" y="146" width="96" height="20" fill="#E8F5EC" stroke="#B8C4D2"/><text x="176" y="160" font-weight="bold">PC</text><text x="258" y="160" text-anchor="end" font-size="8" fill="#5F6B7A">8 bit</text>
+    <rect x="168" y="169" width="96" height="20" fill="#E8F5EC" stroke="#B8C4D2"/><text x="176" y="183" font-weight="bold">IR</text><text x="258" y="183" text-anchor="end" font-size="8" fill="#5F6B7A">16 bit</text>
+    <rect x="168" y="192" width="96" height="20" fill="#E8F5EC" stroke="#B8C4D2"/><text x="176" y="206" font-weight="bold">MAR</text><text x="258" y="206" text-anchor="end" font-size="8" fill="#5F6B7A">8 bit</text>
+    <rect x="168" y="215" width="96" height="20" fill="#E8F5EC" stroke="#B8C4D2"/><text x="176" y="229" font-weight="bold">MDR</text><text x="258" y="229" text-anchor="end" font-size="8" fill="#5F6B7A">8 bit</text>
+  </g>
+
+  <!-- ALU -->
+  <path d="M40,262 L240,262 L215,312 L65,312 Z" fill="#FDF0E6" stroke="#B5651D" stroke-width="1.3"/>
+  <text x="140" y="282" text-anchor="middle" font-size="11" font-weight="bold" fill="#B5651D">ALU</text>
+  <text x="140" y="296" text-anchor="middle" font-size="8">ADD SUB MUL INC DEC CMP</text>
+  <text x="140" y="307" text-anchor="middle" font-size="7.5" fill="#5F6B7A">8-bit, wraps mod 256</text>
+  <!-- ALU wiring -->
+  <line x1="60" y1="246" x2="60" y2="261" stroke="#1F3A5F" stroke-width="1.2" marker-end="url(#ar)"/>
+  <text x="54" y="257" text-anchor="end" font-size="8" font-weight="bold">A</text>
+  <line x1="100" y1="246" x2="100" y2="261" stroke="#1F3A5F" stroke-width="1.2" marker-end="url(#ar)"/>
+  <text x="94" y="257" text-anchor="end" font-size="8" font-weight="bold">B</text>
+  <polyline points="190,262 190,254 128,254 128,247" fill="none" stroke="#B5651D" stroke-width="1.2" marker-end="url(#ao)"/>
+  <text x="194" y="258" font-size="8" fill="#B5651D" font-weight="bold">Y → Ra</text>
+  <polyline points="52,287 14,287 14,81 22,81" fill="none" stroke="#B5651D" stroke-width="1.2" marker-end="url(#ao)"/>
+  <text x="33" y="283" font-size="7.5" fill="#B5651D" font-weight="bold" text-anchor="middle">Z, N</text>
+
+  <!-- BUS -->
+  <rect x="296" y="40" width="98" height="206" rx="4" fill="#FFFBEF" stroke="#E2C26B" stroke-dasharray="4 3"/>
+  <text x="345" y="262" text-anchor="middle" font-size="11" font-weight="bold" fill="#8A6A10">SYSTEM BUS</text>
+  <!-- control -->
+  <line x1="276" y1="88" x2="408" y2="88" stroke="#B5651D" stroke-width="2.4" marker-end="url(#ao)"/>
+  <text x="345" y="80" text-anchor="middle" font-size="8.5" fill="#B5651D" font-weight="bold">CONTROL</text>
+  <text x="345" y="101" text-anchor="middle" font-size="7.5" fill="#B5651D">READ / WRITE</text>
+  <!-- address -->
+  <line x1="264" y1="202" x2="408" y2="202" stroke="#1F3A5F" stroke-width="2.4" marker-end="url(#ar)"/>
+  <text x="345" y="196" text-anchor="middle" font-size="8.5" fill="#1F3A5F" font-weight="bold">ADDRESS (8)</text>
+  <!-- data -->
+  <line x1="266" y1="225" x2="408" y2="225" stroke="#1E7B45" stroke-width="2.4" marker-start="url(#ag)" marker-end="url(#ag)"/>
+  <text x="345" y="238" text-anchor="middle" font-size="8.5" fill="#1E7B45" font-weight="bold">DATA (8)</text>
+
+  <!-- RAM -->
+  <rect x="410" y="22" width="122" height="300" rx="8" fill="#fff" stroke="#1F3A5F" stroke-width="2"/>
+  <text x="471" y="16" text-anchor="middle" font-size="13" font-weight="bold" fill="#1F3A5F">RAM</text>
+  <text x="471" y="38" text-anchor="middle" font-size="8.5" fill="#5F6B7A">256 cells × 8 bits</text>
+  <g font-size="8.5">
+    <rect x="420" y="46" width="102" height="120" fill="#D3E3F8" stroke="#B8C4D2"/>
+    <text x="471" y="100" text-anchor="middle" font-weight="bold">code</text>
+    <text x="471" y="113" text-anchor="middle" class="mono" font-size="7.5">0x00 – 0x7F</text>
+    <rect x="420" y="166" width="102" height="70" fill="#F4F7FA" stroke="#B8C4D2"/>
+    <text x="471" y="198" text-anchor="middle">free</text>
+    <text x="471" y="210" text-anchor="middle" class="mono" font-size="7.5">0x80 – 0xEF</text>
+    <rect x="420" y="236" width="102" height="18" fill="#FFE2A8" stroke="#B8C4D2"/><text x="426" y="248" class="mono" font-size="7.5">0xF0</text><text x="514" y="248" text-anchor="end">a</text>
+    <rect x="420" y="254" width="102" height="18" fill="#FFE2A8" stroke="#B8C4D2"/><text x="426" y="266" class="mono" font-size="7.5">0xF1</text><text x="514" y="266" text-anchor="end">b</text>
+    <rect x="420" y="272" width="102" height="18" fill="#CDEFD7" stroke="#B8C4D2"/><text x="426" y="284" class="mono" font-size="7.5">0xF2</text><text x="514" y="284" text-anchor="end">c (result)</text>
+    <rect x="420" y="290" width="102" height="22" fill="#F4F7FA" stroke="#B8C4D2"/><text x="426" y="304" class="mono" font-size="7.5">0xF3–FF</text><text x="514" y="304" text-anchor="end">spare</text>
+  </g>
+
+  <!-- legend -->
+  <g font-size="8" transform="translate(40,338)">
+    <line x1="0" y1="-3" x2="22" y2="-3" stroke="#1F3A5F" stroke-width="2.4"/><text x="27" y="0">address (MAR → RAM)</text>
+    <line x1="150" y1="-3" x2="172" y2="-3" stroke="#1E7B45" stroke-width="2.4"/><text x="177" y="0">data (MDR ↔ RAM)</text>
+    <line x1="290" y1="-3" x2="312" y2="-3" stroke="#B5651D" stroke-width="2.4"/><text x="317" y="0">control / ALU paths</text>
+  </g>
+</svg>
+<figcaption>Figure 1. MiniCPU-8: CPU, system bus and RAM</figcaption>
+</figure>
+
+<div class="tcap">Table 4. CPU Specification</div>
+<table>
+  <tr><th style="width:30%">Item</th><th>Value</th></tr>
+  <tr><td>Data width</td><td>8 bits (registers, ALU, RAM cells, data bus)</td></tr>
+  <tr><td>Address width / RAM</td><td>8 bits → 256 bytes (0x00 – 0xFF)</td></tr>
+  <tr><td>Special-purpose registers</td><td>PC (8), IR (16), MAR (8), MDR (8)</td></tr>
+  <tr><td>General-purpose registers</td><td>R0, R1, R2, R3 (8 bits each)</td></tr>
+  <tr><td>Flags</td><td>Z = result is 0 &nbsp;•&nbsp; N = bit 7 of result</td></tr>
+  <tr><td>Instruction size</td><td>16 bits, 2 bytes, high byte first</td></tr>
+  <tr><td>Clock</td><td>4 cycles per instruction: FETCH, FETCH, DECODE, EXECUTE (Figure 3)</td></tr>
+  <tr><td>Faults (CPU stops)</td><td>reserved opcode 0xE &nbsp;•&nbsp; unused field ≠ 0 &nbsp;•&nbsp; odd PC</td></tr>
+</table>
+</section>
+
+<!-- ======================================================= 2. HARDWARE IN CODE -->
+<section>
+<h1>2. CPU, Bus and RAM in Code</h1>
+<div class="tcap">Table 5. Hardware → C code (all hardware is in <span class="m">src/machine.h</span> / <span class="m">src/machine.c</span>)</div>
+<table>
+  <tr><th style="width:17%">Hardware</th><th style="width:40%">C type</th><th>C functions</th></tr>
+  <tr><td>RAM</td><td class="m">RAM { u8 cell[256]; }</td><td class="m">ram_clear()</td></tr>
+  <tr><td>System bus</td><td class="m">Bus { address, data, control }</td><td class="m">bus_read(), bus_write(), bus_idle()</td></tr>
+  <tr><td>ALU</td><td class="m">ALU { op, a, b, y, z, n }</td><td class="m">alu_compute()</td></tr>
+  <tr><td>CPU registers</td><td class="m">CPU { pc, ir, mar, mdr, r[4], z, n }</td><td class="m">cpu_reset()</td></tr>
+  <tr><td>Control unit + clock</td><td class="m">CPU { phase, clock, opcode, ra, rb, imm }</td><td class="m">cpu_clock_tick() — one call = one clock cycle</td></tr>
+  <tr><td>ISA table</td><td class="m">InstrInfo ISA[16]</td><td class="m">isa_valid()</td></tr>
+  <tr><td>Program loader</td><td class="m">Program, u16 code[]</td><td class="m">program_load() — writes words via the bus</td></tr>
+</table>
+<h2>Hardware structures</h2>
+<!--@code:machine_structs.txt-->
+<p class="note">Listing 1. RAM, Bus, ALU and CPU structures (src/machine.h)</p>
+</section>
+
+<section>
+<h1>2. CPU, Bus and RAM in Code (cont.)</h1>
+<h2>One clock cycle</h2>
+<!--@code:clock_tick.txt-->
+<p class="note">Listing 2. cpu_clock_tick(): the fetch-decode-execute cycle (src/machine.c)</p>
+</section>
+
+<section>
+<h1>2. CPU, Bus and RAM in Code (cont.)</h1>
+<h2>Bus</h2>
+<!--@code:bus.txt-->
+<p class="note">Listing 3. Bus read / write: the only path between CPU and RAM (src/machine.c)</p>
+<h2>Hand-encoded program (binary written by hand)</h2>
+<!--@code:add_code.txt-->
+<p class="note">Listing 4. Program 1 as binary instruction words (src/programs.c)</p>
+<h2>Loading the binary into RAM</h2>
+<!--@code:loader.txt-->
+<p class="note">Listing 5. program_load(): each word is written to RAM through the bus, high byte first (src/programs.c)</p>
+</section>
+
+<!-- ======================================================= 3. ISA -->
+<section>
+<h1>3. Instruction Set Architecture</h1>
+<figure>
+<svg viewBox="0 0 540 172" width="100%">
+  <g font-size="8" fill="#5F6B7A" text-anchor="middle" class="mono">
+    <text x="42" y="12">15</text><text x="72" y="12">14</text><text x="102" y="12">13</text><text x="132" y="12">12</text>
+    <text x="162" y="12">11</text><text x="192" y="12">10</text><text x="222" y="12">9</text><text x="252" y="12">8</text>
+    <text x="282" y="12">7</text><text x="312" y="12">6</text><text x="342" y="12">5</text><text x="372" y="12">4</text>
+    <text x="402" y="12">3</text><text x="432" y="12">2</text><text x="462" y="12">1</text><text x="492" y="12">0</text>
+  </g>
+  <rect x="27" y="18" width="120" height="26" fill="#D3E3F8" stroke="#1F3A5F"/>
+  <rect x="147" y="18" width="60" height="26" fill="#E8F5EC" stroke="#1F3A5F"/>
+  <rect x="207" y="18" width="60" height="26" fill="#FFF4D6" stroke="#1F3A5F"/>
+  <rect x="267" y="18" width="240" height="26" fill="#FDF0E6" stroke="#1F3A5F"/>
+  <g font-size="10" font-weight="bold" text-anchor="middle">
+    <text x="87" y="35">opcode</text><text x="177" y="35">ra</text><text x="237" y="35">rb</text><text x="387" y="35">imm8 / addr8</text>
+  </g>
+  <g font-size="7.5" fill="#5F6B7A" text-anchor="middle">
+    <text x="87" y="55">4 bits</text><text x="177" y="55">2 bits</text><text x="237" y="55">2 bits</text><text x="387" y="55">8 bits</text>
+  </g>
+  <!-- example 1 -->
+  <text x="27" y="78" font-size="8.5" font-weight="bold" fill="#1F3A5F">LOAD R1, [0xF1]  =  0x24F1</text>
+  <g class="mono" font-size="10" text-anchor="middle">
+    <rect x="27" y="83" width="120" height="20" fill="#D3E3F8" stroke="#B8C4D2"/><text x="87" y="97">0 0 1 0</text>
+    <rect x="147" y="83" width="60" height="20" fill="#E8F5EC" stroke="#B8C4D2"/><text x="177" y="97">0 1</text>
+    <rect x="207" y="83" width="60" height="20" fill="#FFF4D6" stroke="#B8C4D2"/><text x="237" y="97">0 0</text>
+    <rect x="267" y="83" width="240" height="20" fill="#FDF0E6" stroke="#B8C4D2"/><text x="387" y="97">1 1 1 1 0 0 0 1</text>
+  </g>
+  <g font-size="7.5" fill="#5F6B7A" text-anchor="middle"><text x="87" y="113">LOAD</text><text x="177" y="113">R1</text><text x="237" y="113">unused</text><text x="387" y="113">address 0xF1 (b)</text></g>
+  <!-- example 2 -->
+  <text x="27" y="130" font-size="8.5" font-weight="bold" fill="#1F3A5F">ADD R0, R1  =  0x5100</text>
+  <g class="mono" font-size="10" text-anchor="middle">
+    <rect x="27" y="135" width="120" height="20" fill="#D3E3F8" stroke="#B8C4D2"/><text x="87" y="149">0 1 0 1</text>
+    <rect x="147" y="135" width="60" height="20" fill="#E8F5EC" stroke="#B8C4D2"/><text x="177" y="149">0 0</text>
+    <rect x="207" y="135" width="60" height="20" fill="#FFF4D6" stroke="#B8C4D2"/><text x="237" y="149">0 1</text>
+    <rect x="267" y="135" width="240" height="20" fill="#FDF0E6" stroke="#B8C4D2"/><text x="387" y="149">0 0 0 0 0 0 0 0</text>
+  </g>
+  <g font-size="7.5" fill="#5F6B7A" text-anchor="middle"><text x="87" y="165">ADD</text><text x="177" y="165">R0</text><text x="237" y="165">R1</text><text x="387" y="165">unused (must be 0)</text></g>
+</svg>
+<figcaption>Figure 2. Instruction format (16-bit word, stored high byte first)</figcaption>
+</figure>
+
+<div class="tcap">Table 6. Instruction Set and Binary Encoding</div>
+<table>
+  <tr><th>Mnemonic</th><th class="c">Opcode</th><th>Binary encoding</th><th>Operands</th><th>Operation</th><th class="c">Flags</th></tr>
+  <tr><td><b>NOP</b></td><td class="c m">0x0</td><td class="m">0000 00 00 00000000</td><td class="m">—</td><td>no operation</td><td class="c">–</td></tr>
+  <tr><td><b>LDI</b></td><td class="c m">0x1</td><td class="m">0001 aa 00 iiiiiiii</td><td class="m">Ra, imm8</td><td>Ra ← imm8</td><td class="c">–</td></tr>
+  <tr><td><b>LOAD</b></td><td class="c m">0x2</td><td class="m">0010 aa 00 dddddddd</td><td class="m">Ra, [addr]</td><td>Ra ← RAM[addr]</td><td class="c">–</td></tr>
+  <tr><td><b>STORE</b></td><td class="c m">0x3</td><td class="m">0011 aa 00 dddddddd</td><td class="m">Ra, [addr]</td><td>RAM[addr] ← Ra</td><td class="c">–</td></tr>
+  <tr><td><b>MOV</b></td><td class="c m">0x4</td><td class="m">0100 aa bb 00000000</td><td class="m">Ra, Rb</td><td>Ra ← Rb</td><td class="c">–</td></tr>
+  <tr><td><b>ADD</b></td><td class="c m">0x5</td><td class="m">0101 aa bb 00000000</td><td class="m">Ra, Rb</td><td>Ra ← Ra + Rb</td><td class="c">Z N</td></tr>
+  <tr><td><b>SUB</b></td><td class="c m">0x6</td><td class="m">0110 aa bb 00000000</td><td class="m">Ra, Rb</td><td>Ra ← Ra − Rb</td><td class="c">Z N</td></tr>
+  <tr><td><b>MUL</b></td><td class="c m">0x7</td><td class="m">0111 aa bb 00000000</td><td class="m">Ra, Rb</td><td>Ra ← Ra × Rb (low 8 bits)</td><td class="c">Z N</td></tr>
+  <tr><td><b>INC</b></td><td class="c m">0x8</td><td class="m">1000 aa 00 00000000</td><td class="m">Ra</td><td>Ra ← Ra + 1</td><td class="c">Z N</td></tr>
+  <tr><td><b>DEC</b></td><td class="c m">0x9</td><td class="m">1001 aa 00 00000000</td><td class="m">Ra</td><td>Ra ← Ra − 1</td><td class="c">Z N</td></tr>
+  <tr><td><b>CMP</b></td><td class="c m">0xA</td><td class="m">1010 aa bb 00000000</td><td class="m">Ra, Rb</td><td>Ra − Rb, flags only</td><td class="c">Z N</td></tr>
+  <tr><td><b>JMP</b></td><td class="c m">0xB</td><td class="m">1011 00 00 dddddddd</td><td class="m">addr</td><td>PC ← addr</td><td class="c">–</td></tr>
+  <tr><td><b>JZ</b></td><td class="c m">0xC</td><td class="m">1100 00 00 dddddddd</td><td class="m">addr</td><td>if Z = 1: PC ← addr</td><td class="c">–</td></tr>
+  <tr><td><b>JNZ</b></td><td class="c m">0xD</td><td class="m">1101 00 00 dddddddd</td><td class="m">addr</td><td>if Z = 0: PC ← addr</td><td class="c">–</td></tr>
+  <tr><td><i>reserved</i></td><td class="c m">0xE</td><td class="m">1110 ·· ·· ········</td><td class="m">—</td><td>CPU fault</td><td class="c">–</td></tr>
+  <tr><td><b>HALT</b></td><td class="c m">0xF</td><td class="m">1111 00 00 00000000</td><td class="m">—</td><td>stop the clock</td><td class="c">–</td></tr>
+</table>
+<p class="note">aa / bb = register code (00 = R0, 01 = R1, 10 = R2, 11 = R3) &nbsp;•&nbsp; iiiiiiii = immediate &nbsp;•&nbsp; dddddddd = RAM address &nbsp;•&nbsp; fields shown as 0 must be 0.</p>
+</section>
+
+<!-- ======================================================= 4. CLOCK -->
+<section>
+<h1>4. Fetch – Decode – Execute (CPU Clock)</h1>
+<figure>
+<svg viewBox="0 0 540 205" width="100%">
+  <defs>
+    <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1F3A5F"/></marker>
+  </defs>
+  <text x="10" y="30" font-size="9" font-weight="bold" fill="#B5651D">CLK</text>
+  <path d="M40,40 h10 v-24 h52 v24 h52 v-24 h52 v24 h52 v-24 h52 v24 h52 v-24 h52 v24 h52 v-24 h52" fill="none" stroke="#B5651D" stroke-width="1.6"/>
+  <g font-size="8.5" font-weight="bold" fill="#1F3A5F" text-anchor="middle">
+    <text x="102" y="56">T1</text><text x="206" y="56">T2</text><text x="310" y="56">T3</text><text x="414" y="56">T4</text>
+  </g>
+  <g>
+    <rect x="52" y="64" width="100" height="40" rx="5" fill="#D3E3F8" stroke="#1F3A5F"/>
+    <rect x="156" y="64" width="100" height="40" rx="5" fill="#D3E3F8" stroke="#1F3A5F"/>
+    <rect x="260" y="64" width="100" height="40" rx="5" fill="#FFF4D6" stroke="#1F3A5F"/>
+    <rect x="364" y="64" width="100" height="40" rx="5" fill="#FDF0E6" stroke="#1F3A5F"/>
+  </g>
+  <g font-size="10" font-weight="bold" text-anchor="middle">
+    <text x="102" y="82">FETCH</text><text x="206" y="82">FETCH</text><text x="310" y="88">DECODE</text><text x="414" y="88">EXECUTE</text>
+  </g>
+  <g font-size="7.5" text-anchor="middle" fill="#5F6B7A">
+    <text x="102" y="96">high byte</text><text x="206" y="96">low byte</text>
+  </g>
+  <g font-size="7.4" class="mono" text-anchor="middle">
+    <text x="102" y="120">MAR←PC</text><text x="102" y="131">MDR←RAM[MAR]</text><text x="102" y="142">IR[15:8]←MDR</text><text x="102" y="153">PC←PC+1</text>
+    <text x="206" y="120">MAR←PC</text><text x="206" y="131">MDR←RAM[MAR]</text><text x="206" y="142">IR[7:0]←MDR</text><text x="206" y="153">PC←PC+1</text>
+    <text x="310" y="120">opcode←IR[15:12]</text><text x="310" y="131">ra←IR[11:10]</text><text x="310" y="142">rb←IR[9:8]</text><text x="310" y="153">imm8←IR[7:0]</text>
+    <text x="414" y="120">ALU op, or</text><text x="414" y="131">bus READ/WRITE,</text><text x="414" y="142">or PC←addr,</text><text x="414" y="153">or HALT</text>
+  </g>
+  <g font-size="7.5" fill="#8A6A10" text-anchor="middle" font-weight="bold">
+    <text x="102" y="168">bus READ</text><text x="206" y="168">bus READ</text><text x="310" y="168">bus idle</text><text x="414" y="168">bus as needed</text>
+  </g>
+  <path d="M464,84 h40 v100 h-452 v-80" fill="none" stroke="#1F3A5F" stroke-width="1.3" marker-end="url(#ar2)"/>
+  <text x="278" y="197" text-anchor="middle" font-size="8.5" fill="#1F3A5F">next instruction (until HALT)</text>
+</svg>
+<figcaption>Figure 3. One instruction = 4 clock cycles</figcaption>
+</figure>
+
+<div class="tcap">Table 7. EXECUTE cycle (T4) of each instruction</div>
+<table>
+  <tr><th style="width:22%">Instruction</th><th style="width:48%">Micro-operations</th><th>Bus</th><th class="c">ALU</th></tr>
+  <tr><td class="m">NOP</td><td class="m">nothing</td><td>idle</td><td class="c">–</td></tr>
+  <tr><td class="m">LDI Ra, imm8</td><td class="m">Ra ← imm8</td><td>idle</td><td class="c">–</td></tr>
+  <tr><td class="m">LOAD Ra, [addr]</td><td class="m">MAR ← addr, MDR ← RAM[MAR], Ra ← MDR</td><td>READ</td><td class="c">–</td></tr>
+  <tr><td class="m">STORE Ra, [addr]</td><td class="m">MAR ← addr, MDR ← Ra, RAM[MAR] ← MDR</td><td>WRITE</td><td class="c">–</td></tr>
+  <tr><td class="m">MOV Ra, Rb</td><td class="m">Ra ← Rb</td><td>idle</td><td class="c">–</td></tr>
+  <tr><td class="m">ADD / SUB / MUL</td><td class="m">A ← Ra, B ← Rb, Ra ← Y, Z N ← ALU</td><td>idle</td><td class="c">✓</td></tr>
+  <tr><td class="m">INC / DEC</td><td class="m">A ← Ra, B ← 1, Ra ← Y, Z N ← ALU</td><td>idle</td><td class="c">✓</td></tr>
+  <tr><td class="m">CMP Ra, Rb</td><td class="m">A ← Ra, B ← Rb, Z N ← ALU (Y discarded)</td><td>idle</td><td class="c">✓</td></tr>
+  <tr><td class="m">JMP / JZ / JNZ</td><td class="m">PC ← addr (JZ: if Z = 1, JNZ: if Z = 0)</td><td>idle</td><td class="c">–</td></tr>
+  <tr><td class="m">HALT</td><td class="m">stop clock, PC stays on HALT</td><td>idle</td><td class="c">–</td></tr>
+</table>
+
+<div class="tcap">Table 8. Memory Map (both programs)</div>
+<table>
+  <tr><th style="width:22%">Address</th><th>Contents</th></tr>
+  <tr><td class="m">0x00 – 0x7F</td><td>code area (both programs use 0x00 – 0x09: 5 instructions × 2 bytes)</td></tr>
+  <tr><td class="m">0x80 – 0xEF</td><td>free</td></tr>
+  <tr><td class="m">0xF0</td><td>a (input)</td></tr>
+  <tr><td class="m">0xF1</td><td>b (input)</td></tr>
+  <tr><td class="m">0xF2</td><td>c (result)</td></tr>
+  <tr><td class="m">0xF3 – 0xFF</td><td>spare</td></tr>
+</table>
+</section>
+
+<!-- ======================================================= 5. PROGRAM 1 -->
+<section>
+<h1>5. Program 1 — Add Two Numbers (c = a + b)</h1>
+<!--@code:add.c-->
+<p class="note">Listing 6. C source (programs/add.c)</p>
+
+<div class="tcap">Table 9. Hand translation: C → assembly → binary (src/programs.c)</div>
+<table>
+  <tr><th>Addr</th><th>Binary (oooo aa bb iiiiiiii)</th><th>Hex</th><th>Assembly</th><th>C meaning</th></tr>
+  <tr><td class="m">0x00</td><td class="m">0010 00 00 11110000</td><td class="m">0x20F0</td><td class="m">LOAD  R0, [0xF0]</td><td class="m">R0 = a</td></tr>
+  <tr><td class="m">0x02</td><td class="m">0010 01 00 11110001</td><td class="m">0x24F1</td><td class="m">LOAD  R1, [0xF1]</td><td class="m">R1 = b</td></tr>
+  <tr><td class="m">0x04</td><td class="m">0101 00 01 00000000</td><td class="m">0x5100</td><td class="m">ADD   R0, R1</td><td class="m">R0 = a + b</td></tr>
+  <tr><td class="m">0x06</td><td class="m">0011 00 00 11110010</td><td class="m">0x30F2</td><td class="m">STORE R0, [0xF2]</td><td class="m">c = R0</td></tr>
+  <tr><td class="m">0x08</td><td class="m">1111 00 00 00000000</td><td class="m">0xF000</td><td class="m">HALT</td><td class="m">end</td></tr>
+</table>
+<p class="note">Data loaded with the code: 0xF0 = 00101000 (a = 40), 0xF1 = 00011001 (b = 25), 0xF2 = 00000000 (c).</p>
+
+<h2>Simulator output: <span class="m">./minicpu add</span></h2>
+<p class="note">Yellow = changed by this instruction (marked * in the console). Green = final result.</p>
+<!--@trace:add_trace.txt-->
+<p class="note">Listing 7. Program 1 execution trace (unedited console output)</p>
+</section>
+
+<!-- ======================================================= 6. PROGRAM 2 -->
+<section>
+<h1>6. Program 2 — Multiply Two Numbers (c = a * b)</h1>
+<!--@code:multiply.c-->
+<p class="note">Listing 8. C source (programs/multiply.c)</p>
+
+<div class="tcap">Table 10. Hand translation: C → assembly → binary (src/programs.c)</div>
+<table>
+  <tr><th>Addr</th><th>Binary (oooo aa bb iiiiiiii)</th><th>Hex</th><th>Assembly</th><th>C meaning</th></tr>
+  <tr><td class="m">0x00</td><td class="m">0010 00 00 11110000</td><td class="m">0x20F0</td><td class="m">LOAD  R0, [0xF0]</td><td class="m">R0 = a</td></tr>
+  <tr><td class="m">0x02</td><td class="m">0010 01 00 11110001</td><td class="m">0x24F1</td><td class="m">LOAD  R1, [0xF1]</td><td class="m">R1 = b</td></tr>
+  <tr><td class="m">0x04</td><td class="m">0111 00 01 00000000</td><td class="m">0x7100</td><td class="m">MUL   R0, R1</td><td class="m">R0 = a * b</td></tr>
+  <tr><td class="m">0x06</td><td class="m">0011 00 00 11110010</td><td class="m">0x30F2</td><td class="m">STORE R0, [0xF2]</td><td class="m">c = R0</td></tr>
+  <tr><td class="m">0x08</td><td class="m">1111 00 00 00000000</td><td class="m">0xF000</td><td class="m">HALT</td><td class="m">end</td></tr>
+</table>
+<p class="note">Data loaded with the code: 0xF0 = 00001000 (a = 8), 0xF1 = 00001001 (b = 9), 0xF2 = 00000000 (c).</p>
+
+<h2>Simulator output: <span class="m">./minicpu mul</span></h2>
+<p class="note">Yellow = changed by this instruction (marked * in the console). Green = final result.</p>
+<!--@trace:mul_trace.txt-->
+<p class="note">Listing 9. Program 2 execution trace (unedited console output)</p>
+</section>
+
+<!-- ======================================================= 7. RUN -->
+<section>
+<h1>7. How to Compile and Run</h1>
+<div class="tcap">Table 11. Commands (GCC or Clang, any OS with <span class="m">make</span>)</div>
+<table>
+  <tr><th style="width:38%">Command</th><th>Result</th></tr>
+  <tr><td class="m">make</td><td>builds <span class="m">./minicpu</span></td></tr>
+  <tr><td class="m">./minicpu</td><td>architecture, ISA table, both programs, PASS/FAIL summary</td></tr>
+  <tr><td class="m">./minicpu add</td><td>Program 1 only</td></tr>
+  <tr><td class="m">./minicpu mul</td><td>Program 2 only</td></tr>
+  <tr><td class="m">./minicpu isa</td><td>architecture and ISA table only</td></tr>
+  <tr><td class="m">make test</td><td>automated tests (<!--@text:tests-->)</td></tr>
+  <tr><td class="m">make check-c</td><td>compiles programs/add.c and multiply.c natively → <span class="m">c = 65</span>, <span class="m">c = 72</span></td></tr>
+  <tr><td class="m">make traces</td><td>saves the console output to <span class="m">output/</span></td></tr>
+  <tr><td class="m">cc -std=c99 src/*.c -o minicpu</td><td>build without make</td></tr>
+</table>
+
+<div class="tcap">Table 12. Source Files</div>
+<table>
+  <tr><th style="width:38%">File</th><th>Contents</th></tr>
+  <tr><td class="m">src/isa.h, src/isa.c</td><td>opcodes, instruction format, instruction table</td></tr>
+  <tr><td class="m">src/machine.h, src/machine.c</td><td>RAM, bus, ALU, CPU, clock (fetch-decode-execute)</td></tr>
+  <tr><td class="m">src/programs.h, src/programs.c</td><td>hand-encoded binary of both programs, loader</td></tr>
+  <tr><td class="m">src/display.h, src/display.c</td><td>all printing (only file that uses <span class="m">printf</span>)</td></tr>
+  <tr><td class="m">src/main.c</td><td>command line, runs the clock, prints each instruction</td></tr>
+  <tr><td class="m">programs/add.c, programs/multiply.c</td><td>original C programs</td></tr>
+  <tr><td class="m">tests/test_cpu.c</td><td>automated tests</td></tr>
+  <tr><td class="m">output/*.txt</td><td>saved console output</td></tr>
+</table>
+</section>
+
+<!-- ======================================================= 8. TEAM -->
+<section>
+<h1>8. Team Contributions</h1>
+<div class="tcap">Table 13. Contribution of each team member</div>
+<table class="box">
+  <tr><th style="width:21%">Member</th><th style="width:19%">Area</th><th>Contribution</th></tr>
+  <tr>
+    <td><b>Revati Dharmadhikari</b></td><td>ISA, ALU &amp; Program 1</td>
+    <td>Designed the 16-bit instruction format and opcode map (<span class="m">src/isa.h</span>, <span class="m">src/isa.c</span>) and wrote the ALU with its Z/N flag logic (<span class="m">alu_compute()</span> in <span class="m">src/machine.c</span>).
+        Wrote Program 1 (<span class="m">programs/add.c</span>) and hand-translated it to binary in <span class="m">src/programs.c</span>.
+        Wrote the automated tests (<span class="m">tests/test_cpu.c</span>) and Section 3 of this report (Figure 2, Table 6).</td>
+  </tr>
+  <tr>
+    <td><b>Renuka Patwari</b></td><td>RAM, bus &amp; Program 2</td>
+    <td>Wrote the RAM, the system bus and the program loader (<span class="m">ram_clear()</span>, <span class="m">bus_read()</span>, <span class="m">bus_write()</span>, <span class="m">program_load()</span>).
+        Wrote Program 2 (<span class="m">programs/multiply.c</span>) and its hand translation, plus the RAM display in binary, hex and ASCII (<span class="m">show_ram()</span> in <span class="m">src/display.c</span>).
+        Drew Figure 1 (CPU–Bus–RAM) and wrote Sections 1, 5 and 6 of this report.</td>
+  </tr>
+  <tr>
+    <td><b>Atharva Mokashi</b></td><td>CPU, clock &amp; trace</td>
+    <td>Wrote the CPU control unit and clock: the 4-cycle fetch-decode-execute, instruction execution and fault checks (<span class="m">cpu_clock_tick()</span>, <span class="m">execute()</span> in <span class="m">src/machine.c</span>).
+        Wrote the per-cycle trace of bus, registers, ALU and flags (<span class="m">show_instruction()</span> in <span class="m">src/display.c</span>, <span class="m">src/main.c</span>), the Makefile and the README.
+        Drew Figure 3 and wrote Sections 2, 4 and 7 of this report.</td>
+  </tr>
+</table>
+</section>
+
+</body>
+</html>

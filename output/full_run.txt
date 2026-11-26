@@ -1,0 +1,489 @@
+==========================================================================================
+ MiniCPU-8 : 8-bit CPU, 16-bit instructions, 256-byte RAM
+==========================================================================================
+   +------------------------------- CPU --------------------------------+
+   |  CONTROL UNIT : clock, phase FETCH -> DECODE -> EXECUTE             |
+   |  SPECIAL REGS : PC (8)   IR (16)   MAR (8)   MDR (8)                |
+   |  GENERAL REGS : R0  R1  R2  R3   (8 bits each)                      |
+   |  ALU          : ADD SUB MUL INC DEC CMP  (A, B -> Y)    FLAGS: Z  N |
+   +-------------------------------------+------------------------------+
+            MAR -> address bus (8 bits)  |  MDR <-> data bus (8 bits)
+            READ / WRITE control line    |
+   ======================================+=================== SYSTEM BUS
+                                         |
+                          +--------------+--------------+
+                          |        RAM  256 x 8 bits    |
+                          |  0x00-0x7F code             |
+                          |  0x80-0xEF free             |
+                          |  0xF0-0xFF data (a, b, c)   |
+                          +-----------------------------+
+
+==========================================================================================
+ INSTRUCTION SET   (word = oooo aa bb iiiiiiii : opcode, reg A, reg B, imm8/addr8)
+==========================================================================================
+  MNEMONIC  OPCODE  BINARY ENCODING       OPERANDS     OPERATION                   FLAGS
+  --------  ------  --------------------  -----------  --------------------------  -----
+  NOP       0x0     0000 00 00 00000000   -            no operation                -
+  LDI       0x1     0001 aa 00 iiiiiiii   Ra, imm8     Ra <- imm8                  -
+  LOAD      0x2     0010 aa 00 dddddddd   Ra, [addr]   Ra <- RAM[addr]             -
+  STORE     0x3     0011 aa 00 dddddddd   Ra, [addr]   RAM[addr] <- Ra             -
+  MOV       0x4     0100 aa bb 00000000   Ra, Rb       Ra <- Rb                    -
+  ADD       0x5     0101 aa bb 00000000   Ra, Rb       Ra <- Ra + Rb               Z N
+  SUB       0x6     0110 aa bb 00000000   Ra, Rb       Ra <- Ra - Rb               Z N
+  MUL       0x7     0111 aa bb 00000000   Ra, Rb       Ra <- Ra * Rb (low 8 bits)  Z N
+  INC       0x8     1000 aa 00 00000000   Ra           Ra <- Ra + 1                Z N
+  DEC       0x9     1001 aa 00 00000000   Ra           Ra <- Ra - 1                Z N
+  CMP       0xA     1010 aa bb 00000000   Ra, Rb       Ra - Rb (flags only)        Z N
+  JMP       0xB     1011 00 00 dddddddd   addr         PC <- addr                  -
+  JZ        0xC     1100 00 00 dddddddd   addr         if Z = 1: PC <- addr        -
+  JNZ       0xD     1101 00 00 dddddddd   addr         if Z = 0: PC <- addr        -
+  ---       0xE     1110 -- -- --------   -            reserved (fault)            -
+  HALT      0xF     1111 00 00 00000000   -            stop the clock              -
+  Registers: 00 = R0, 01 = R1, 10 = R2, 11 = R3.   Unused fields must be 0.
+  Flags: Z = 1 if result is 0;  N = bit 7 of result.  Arithmetic wraps modulo 256.
+
+==========================================================================================
+ PROGRAM : ADD two numbers  (c = a + b)
+==========================================================================================
+[1] C SOURCE  (programs/add.c)
+
+      unsigned char a = 40;   /* RAM[0xF0] */
+      unsigned char b = 25;   /* RAM[0xF1] */
+      unsigned char c;        /* RAM[0xF2] */
+
+      c = a + b;              /* c = 65    */
+
+[2] HAND TRANSLATION  C -> ASSEMBLY -> BINARY  (words loaded into RAM, high byte first)
+
+  ADDR  BINARY (oooo aa bb iiiiiiii)  HEX     ASSEMBLY           C MEANING
+  ----  ----------------------------  ------  -----------------  --------------
+  0x00  0010 00 00 11110000           0x20F0  LOAD  R0, [0xF0]   R0 = a
+  0x02  0010 01 00 11110001           0x24F1  LOAD  R1, [0xF1]   R1 = b
+  0x04  0101 00 01 00000000           0x5100  ADD   R0, R1       R0 = a + b
+  0x06  0011 00 00 11110010           0x30F2  STORE R0, [0xF2]   c = R0
+  0x08  1111 00 00 00000000           0xF000  HALT               end of program
+
+  ADDR  BINARY    HEX   DEC  C VARIABLE
+  ----  --------  ----  ---  ----------
+  0xF0  00101000  0x28   40  a
+  0xF1  00011001  0x19   25  b
+  0xF2  00000000  0x00    0  c
+
+  [3] RAM AFTER LOADING  (before execution)
+  CODE AREA                             DATA AREA
+  ADDR  BINARY    HEX  ASCII            ADDR  BINARY    HEX  ASCII  VARIABLE
+  0x00  00100000  20   ' '              0xF0  00101000  28   '('  a
+  0x01  11110000  F0    .               0xF1  00011001  19    .   b
+  0x02  00100100  24   '$'              0xF2  00000000  00    .   c
+  0x03  11110001  F1    .               0xF3  00000000  00    .
+  0x04  01010001  51   'Q'
+  0x05  00000000  00    .
+  0x06  00110000  30   '0'
+  0x07  11110010  F2    .
+  0x08  11110000  F0    .
+  0x09  00000000  00    .
+  0x0A  00000000  00    .
+  0x0B  00000000  00    .
+
+[4] EXECUTION  (fetch-decode-execute, 4 clock cycles per instruction)
+    '*' = changed by this instruction
+
+------------------------------------------------------------------------------------------
+ INSTRUCTION 1 | PC = 0x00 | IR = 0010 00 00 11110000 = 0x20F0 | LOAD  R0, [0xF0]
+------------------------------------------------------------------------------------------
+  CLK  PHASE    BUS: CTRL   ADDR  DATA   MICRO-OPERATIONS
+  001  FETCH         READ   0x00  0x20   MAR<-PC, MDR<-RAM[MAR], IR[15:8]<-MDR, PC<-PC+1
+  002  FETCH         READ   0x01  0xF0   MAR<-PC, MDR<-RAM[MAR], IR[7:0]<-MDR,  PC<-PC+1
+  003  DECODE        IDLE   ----  ----   opcode=0010 (LOAD)  ra=00  rb=00  imm8=11110000
+  004  EXECUTE       READ   0xF0  0x28   MAR<-0xF0, MDR<-RAM[MAR], R0<-MDR
+
+  CPU STATE after this instruction
+  SPECIAL-PURPOSE REGISTERS               GENERAL-PURPOSE REGISTERS (bin, hex, dec)
+    PC  = 00000010         0x02*          R0 = 00101000  0x28   40*
+    IR  = 0010000011110000 0x20F0*        R1 = 00000000  0x00    0
+    MAR = 11110000         0xF0*          R2 = 00000000  0x00    0
+    MDR = 00101000         0x28*          R3 = 00000000  0x00    0
+  ALU   : not used by this instruction
+  FLAGS : Z = 0   N = 0      CLOCK: 4 cycles
+
+  RAM after this instruction
+  CODE AREA                             DATA AREA
+  ADDR  BINARY    HEX  ASCII            ADDR  BINARY    HEX  ASCII  VARIABLE
+  0x00  00100000  20   ' '              0xF0  00101000  28   '('  a
+  0x01  11110000  F0    .               0xF1  00011001  19    .   b
+  0x02  00100100  24   '$'              0xF2  00000000  00    .   c
+  0x03  11110001  F1    .               0xF3  00000000  00    .
+  0x04  01010001  51   'Q'
+  0x05  00000000  00    .
+  0x06  00110000  30   '0'
+  0x07  11110010  F2    .
+  0x08  11110000  F0    .
+  0x09  00000000  00    .
+  0x0A  00000000  00    .
+  0x0B  00000000  00    .
+
+------------------------------------------------------------------------------------------
+ INSTRUCTION 2 | PC = 0x02 | IR = 0010 01 00 11110001 = 0x24F1 | LOAD  R1, [0xF1]
+------------------------------------------------------------------------------------------
+  CLK  PHASE    BUS: CTRL   ADDR  DATA   MICRO-OPERATIONS
+  005  FETCH         READ   0x02  0x24   MAR<-PC, MDR<-RAM[MAR], IR[15:8]<-MDR, PC<-PC+1
+  006  FETCH         READ   0x03  0xF1   MAR<-PC, MDR<-RAM[MAR], IR[7:0]<-MDR,  PC<-PC+1
+  007  DECODE        IDLE   ----  ----   opcode=0010 (LOAD)  ra=01  rb=00  imm8=11110001
+  008  EXECUTE       READ   0xF1  0x19   MAR<-0xF1, MDR<-RAM[MAR], R1<-MDR
+
+  CPU STATE after this instruction
+  SPECIAL-PURPOSE REGISTERS               GENERAL-PURPOSE REGISTERS (bin, hex, dec)
+    PC  = 00000100         0x04*          R0 = 00101000  0x28   40
+    IR  = 0010010011110001 0x24F1*        R1 = 00011001  0x19   25*
+    MAR = 11110001         0xF1*          R2 = 00000000  0x00    0
+    MDR = 00011001         0x19*          R3 = 00000000  0x00    0
+  ALU   : not used by this instruction
+  FLAGS : Z = 0   N = 0      CLOCK: 8 cycles
+
+  RAM after this instruction
+  CODE AREA                             DATA AREA
+  ADDR  BINARY    HEX  ASCII            ADDR  BINARY    HEX  ASCII  VARIABLE
+  0x00  00100000  20   ' '              0xF0  00101000  28   '('  a
+  0x01  11110000  F0    .               0xF1  00011001  19    .   b
+  0x02  00100100  24   '$'              0xF2  00000000  00    .   c
+  0x03  11110001  F1    .               0xF3  00000000  00    .
+  0x04  01010001  51   'Q'
+  0x05  00000000  00    .
+  0x06  00110000  30   '0'
+  0x07  11110010  F2    .
+  0x08  11110000  F0    .
+  0x09  00000000  00    .
+  0x0A  00000000  00    .
+  0x0B  00000000  00    .
+
+------------------------------------------------------------------------------------------
+ INSTRUCTION 3 | PC = 0x04 | IR = 0101 00 01 00000000 = 0x5100 | ADD   R0, R1
+------------------------------------------------------------------------------------------
+  CLK  PHASE    BUS: CTRL   ADDR  DATA   MICRO-OPERATIONS
+  009  FETCH         READ   0x04  0x51   MAR<-PC, MDR<-RAM[MAR], IR[15:8]<-MDR, PC<-PC+1
+  010  FETCH         READ   0x05  0x00   MAR<-PC, MDR<-RAM[MAR], IR[7:0]<-MDR,  PC<-PC+1
+  011  DECODE        IDLE   ----  ----   opcode=0101 (ADD)  ra=00  rb=01  imm8=00000000
+  012  EXECUTE       IDLE   ----  ----   ALU: R0 <- R0 + R1; update Z N
+
+  CPU STATE after this instruction
+  SPECIAL-PURPOSE REGISTERS               GENERAL-PURPOSE REGISTERS (bin, hex, dec)
+    PC  = 00000110         0x06*          R0 = 01000001  0x41   65*
+    IR  = 0101000100000000 0x5100*        R1 = 00011001  0x19   25
+    MAR = 00000101         0x05*          R2 = 00000000  0x00    0
+    MDR = 00000000         0x00*          R3 = 00000000  0x00    0
+  ALU   : ADD  A = 00101000 (40) + B = 00011001 (25) -> Y = 01000001 (65)
+  FLAGS : Z = 0   N = 0      CLOCK: 12 cycles
+
+  RAM after this instruction
+  CODE AREA                             DATA AREA
+  ADDR  BINARY    HEX  ASCII            ADDR  BINARY    HEX  ASCII  VARIABLE
+  0x00  00100000  20   ' '              0xF0  00101000  28   '('  a
+  0x01  11110000  F0    .               0xF1  00011001  19    .   b
+  0x02  00100100  24   '$'              0xF2  00000000  00    .   c
+  0x03  11110001  F1    .               0xF3  00000000  00    .
+  0x04  01010001  51   'Q'
+  0x05  00000000  00    .
+  0x06  00110000  30   '0'
+  0x07  11110010  F2    .
+  0x08  11110000  F0    .
+  0x09  00000000  00    .
+  0x0A  00000000  00    .
+  0x0B  00000000  00    .
+
+------------------------------------------------------------------------------------------
+ INSTRUCTION 4 | PC = 0x06 | IR = 0011 00 00 11110010 = 0x30F2 | STORE R0, [0xF2]
+------------------------------------------------------------------------------------------
+  CLK  PHASE    BUS: CTRL   ADDR  DATA   MICRO-OPERATIONS
+  013  FETCH         READ   0x06  0x30   MAR<-PC, MDR<-RAM[MAR], IR[15:8]<-MDR, PC<-PC+1
+  014  FETCH         READ   0x07  0xF2   MAR<-PC, MDR<-RAM[MAR], IR[7:0]<-MDR,  PC<-PC+1
+  015  DECODE        IDLE   ----  ----   opcode=0011 (STORE)  ra=00  rb=00  imm8=11110010
+  016  EXECUTE       WRITE  0xF2  0x41   MAR<-0xF2, MDR<-R0, RAM[MAR]<-MDR
+
+  CPU STATE after this instruction
+  SPECIAL-PURPOSE REGISTERS               GENERAL-PURPOSE REGISTERS (bin, hex, dec)
+    PC  = 00001000         0x08*          R0 = 01000001  0x41   65
+    IR  = 0011000011110010 0x30F2*        R1 = 00011001  0x19   25
+    MAR = 11110010         0xF2*          R2 = 00000000  0x00    0
+    MDR = 01000001         0x41*          R3 = 00000000  0x00    0
+  ALU   : not used by this instruction
+  FLAGS : Z = 0   N = 0      CLOCK: 16 cycles
+
+  RAM after this instruction
+  CODE AREA                             DATA AREA
+  ADDR  BINARY    HEX  ASCII            ADDR  BINARY    HEX  ASCII  VARIABLE
+  0x00  00100000  20   ' '              0xF0  00101000  28   '('  a
+  0x01  11110000  F0    .               0xF1  00011001  19    .   b
+  0x02  00100100  24   '$'              0xF2  01000001  41*  'A'  c
+  0x03  11110001  F1    .               0xF3  00000000  00    .
+  0x04  01010001  51   'Q'
+  0x05  00000000  00    .
+  0x06  00110000  30   '0'
+  0x07  11110010  F2    .
+  0x08  11110000  F0    .
+  0x09  00000000  00    .
+  0x0A  00000000  00    .
+  0x0B  00000000  00    .
+
+------------------------------------------------------------------------------------------
+ INSTRUCTION 5 | PC = 0x08 | IR = 1111 00 00 00000000 = 0xF000 | HALT
+------------------------------------------------------------------------------------------
+  CLK  PHASE    BUS: CTRL   ADDR  DATA   MICRO-OPERATIONS
+  017  FETCH         READ   0x08  0xF0   MAR<-PC, MDR<-RAM[MAR], IR[15:8]<-MDR, PC<-PC+1
+  018  FETCH         READ   0x09  0x00   MAR<-PC, MDR<-RAM[MAR], IR[7:0]<-MDR,  PC<-PC+1
+  019  DECODE        IDLE   ----  ----   opcode=1111 (HALT)  ra=00  rb=00  imm8=00000000
+  020  EXECUTE       IDLE   ----  ----   stop the clock (PC stays on HALT)
+
+  CPU STATE after this instruction
+  SPECIAL-PURPOSE REGISTERS               GENERAL-PURPOSE REGISTERS (bin, hex, dec)
+    PC  = 00001000         0x08           R0 = 01000001  0x41   65
+    IR  = 1111000000000000 0xF000*        R1 = 00011001  0x19   25
+    MAR = 00001001         0x09*          R2 = 00000000  0x00    0
+    MDR = 00000000         0x00*          R3 = 00000000  0x00    0
+  ALU   : not used by this instruction
+  FLAGS : Z = 0   N = 0      CLOCK: 20 cycles     >>> CPU HALTED
+
+  RAM after this instruction
+  CODE AREA                             DATA AREA
+  ADDR  BINARY    HEX  ASCII            ADDR  BINARY    HEX  ASCII  VARIABLE
+  0x00  00100000  20   ' '              0xF0  00101000  28   '('  a
+  0x01  11110000  F0    .               0xF1  00011001  19    .   b
+  0x02  00100100  24   '$'              0xF2  01000001  41   'A'  c
+  0x03  11110001  F1    .               0xF3  00000000  00    .
+  0x04  01010001  51   'Q'
+  0x05  00000000  00    .
+  0x06  00110000  30   '0'
+  0x07  11110010  F2    .
+  0x08  11110000  F0    .
+  0x09  00000000  00    .
+  0x0A  00000000  00    .
+  0x0B  00000000  00    .
+
+==========================================================================================
+ RESULT  c = RAM[0xF2] = 01000001 = 0x41 = 65 = 'A'   expected 65 -> PASS
+         5 instructions, 20 clock cycles
+==========================================================================================
+
+==========================================================================================
+ PROGRAM : MULTIPLY two numbers  (c = a * b)
+==========================================================================================
+[1] C SOURCE  (programs/multiply.c)
+
+      unsigned char a = 8;    /* RAM[0xF0] */
+      unsigned char b = 9;    /* RAM[0xF1] */
+      unsigned char c;        /* RAM[0xF2] */
+
+      c = a * b;              /* c = 72    */
+
+[2] HAND TRANSLATION  C -> ASSEMBLY -> BINARY  (words loaded into RAM, high byte first)
+
+  ADDR  BINARY (oooo aa bb iiiiiiii)  HEX     ASSEMBLY           C MEANING
+  ----  ----------------------------  ------  -----------------  --------------
+  0x00  0010 00 00 11110000           0x20F0  LOAD  R0, [0xF0]   R0 = a
+  0x02  0010 01 00 11110001           0x24F1  LOAD  R1, [0xF1]   R1 = b
+  0x04  0111 00 01 00000000           0x7100  MUL   R0, R1       R0 = a * b
+  0x06  0011 00 00 11110010           0x30F2  STORE R0, [0xF2]   c = R0
+  0x08  1111 00 00 00000000           0xF000  HALT               end of program
+
+  ADDR  BINARY    HEX   DEC  C VARIABLE
+  ----  --------  ----  ---  ----------
+  0xF0  00001000  0x08    8  a
+  0xF1  00001001  0x09    9  b
+  0xF2  00000000  0x00    0  c
+
+  [3] RAM AFTER LOADING  (before execution)
+  CODE AREA                             DATA AREA
+  ADDR  BINARY    HEX  ASCII            ADDR  BINARY    HEX  ASCII  VARIABLE
+  0x00  00100000  20   ' '              0xF0  00001000  08    .   a
+  0x01  11110000  F0    .               0xF1  00001001  09    .   b
+  0x02  00100100  24   '$'              0xF2  00000000  00    .   c
+  0x03  11110001  F1    .               0xF3  00000000  00    .
+  0x04  01110001  71   'q'
+  0x05  00000000  00    .
+  0x06  00110000  30   '0'
+  0x07  11110010  F2    .
+  0x08  11110000  F0    .
+  0x09  00000000  00    .
+  0x0A  00000000  00    .
+  0x0B  00000000  00    .
+
+[4] EXECUTION  (fetch-decode-execute, 4 clock cycles per instruction)
+    '*' = changed by this instruction
+
+------------------------------------------------------------------------------------------
+ INSTRUCTION 1 | PC = 0x00 | IR = 0010 00 00 11110000 = 0x20F0 | LOAD  R0, [0xF0]
+------------------------------------------------------------------------------------------
+  CLK  PHASE    BUS: CTRL   ADDR  DATA   MICRO-OPERATIONS
+  001  FETCH         READ   0x00  0x20   MAR<-PC, MDR<-RAM[MAR], IR[15:8]<-MDR, PC<-PC+1
+  002  FETCH         READ   0x01  0xF0   MAR<-PC, MDR<-RAM[MAR], IR[7:0]<-MDR,  PC<-PC+1
+  003  DECODE        IDLE   ----  ----   opcode=0010 (LOAD)  ra=00  rb=00  imm8=11110000
+  004  EXECUTE       READ   0xF0  0x08   MAR<-0xF0, MDR<-RAM[MAR], R0<-MDR
+
+  CPU STATE after this instruction
+  SPECIAL-PURPOSE REGISTERS               GENERAL-PURPOSE REGISTERS (bin, hex, dec)
+    PC  = 00000010         0x02*          R0 = 00001000  0x08    8*
+    IR  = 0010000011110000 0x20F0*        R1 = 00000000  0x00    0
+    MAR = 11110000         0xF0*          R2 = 00000000  0x00    0
+    MDR = 00001000         0x08*          R3 = 00000000  0x00    0
+  ALU   : not used by this instruction
+  FLAGS : Z = 0   N = 0      CLOCK: 4 cycles
+
+  RAM after this instruction
+  CODE AREA                             DATA AREA
+  ADDR  BINARY    HEX  ASCII            ADDR  BINARY    HEX  ASCII  VARIABLE
+  0x00  00100000  20   ' '              0xF0  00001000  08    .   a
+  0x01  11110000  F0    .               0xF1  00001001  09    .   b
+  0x02  00100100  24   '$'              0xF2  00000000  00    .   c
+  0x03  11110001  F1    .               0xF3  00000000  00    .
+  0x04  01110001  71   'q'
+  0x05  00000000  00    .
+  0x06  00110000  30   '0'
+  0x07  11110010  F2    .
+  0x08  11110000  F0    .
+  0x09  00000000  00    .
+  0x0A  00000000  00    .
+  0x0B  00000000  00    .
+
+------------------------------------------------------------------------------------------
+ INSTRUCTION 2 | PC = 0x02 | IR = 0010 01 00 11110001 = 0x24F1 | LOAD  R1, [0xF1]
+------------------------------------------------------------------------------------------
+  CLK  PHASE    BUS: CTRL   ADDR  DATA   MICRO-OPERATIONS
+  005  FETCH         READ   0x02  0x24   MAR<-PC, MDR<-RAM[MAR], IR[15:8]<-MDR, PC<-PC+1
+  006  FETCH         READ   0x03  0xF1   MAR<-PC, MDR<-RAM[MAR], IR[7:0]<-MDR,  PC<-PC+1
+  007  DECODE        IDLE   ----  ----   opcode=0010 (LOAD)  ra=01  rb=00  imm8=11110001
+  008  EXECUTE       READ   0xF1  0x09   MAR<-0xF1, MDR<-RAM[MAR], R1<-MDR
+
+  CPU STATE after this instruction
+  SPECIAL-PURPOSE REGISTERS               GENERAL-PURPOSE REGISTERS (bin, hex, dec)
+    PC  = 00000100         0x04*          R0 = 00001000  0x08    8
+    IR  = 0010010011110001 0x24F1*        R1 = 00001001  0x09    9*
+    MAR = 11110001         0xF1*          R2 = 00000000  0x00    0
+    MDR = 00001001         0x09*          R3 = 00000000  0x00    0
+  ALU   : not used by this instruction
+  FLAGS : Z = 0   N = 0      CLOCK: 8 cycles
+
+  RAM after this instruction
+  CODE AREA                             DATA AREA
+  ADDR  BINARY    HEX  ASCII            ADDR  BINARY    HEX  ASCII  VARIABLE
+  0x00  00100000  20   ' '              0xF0  00001000  08    .   a
+  0x01  11110000  F0    .               0xF1  00001001  09    .   b
+  0x02  00100100  24   '$'              0xF2  00000000  00    .   c
+  0x03  11110001  F1    .               0xF3  00000000  00    .
+  0x04  01110001  71   'q'
+  0x05  00000000  00    .
+  0x06  00110000  30   '0'
+  0x07  11110010  F2    .
+  0x08  11110000  F0    .
+  0x09  00000000  00    .
+  0x0A  00000000  00    .
+  0x0B  00000000  00    .
+
+------------------------------------------------------------------------------------------
+ INSTRUCTION 3 | PC = 0x04 | IR = 0111 00 01 00000000 = 0x7100 | MUL   R0, R1
+------------------------------------------------------------------------------------------
+  CLK  PHASE    BUS: CTRL   ADDR  DATA   MICRO-OPERATIONS
+  009  FETCH         READ   0x04  0x71   MAR<-PC, MDR<-RAM[MAR], IR[15:8]<-MDR, PC<-PC+1
+  010  FETCH         READ   0x05  0x00   MAR<-PC, MDR<-RAM[MAR], IR[7:0]<-MDR,  PC<-PC+1
+  011  DECODE        IDLE   ----  ----   opcode=0111 (MUL)  ra=00  rb=01  imm8=00000000
+  012  EXECUTE       IDLE   ----  ----   ALU: R0 <- R0 * R1; update Z N
+
+  CPU STATE after this instruction
+  SPECIAL-PURPOSE REGISTERS               GENERAL-PURPOSE REGISTERS (bin, hex, dec)
+    PC  = 00000110         0x06*          R0 = 01001000  0x48   72*
+    IR  = 0111000100000000 0x7100*        R1 = 00001001  0x09    9
+    MAR = 00000101         0x05*          R2 = 00000000  0x00    0
+    MDR = 00000000         0x00*          R3 = 00000000  0x00    0
+  ALU   : MUL  A = 00001000 (8) * B = 00001001 (9) -> Y = 01001000 (72)
+  FLAGS : Z = 0   N = 0      CLOCK: 12 cycles
+
+  RAM after this instruction
+  CODE AREA                             DATA AREA
+  ADDR  BINARY    HEX  ASCII            ADDR  BINARY    HEX  ASCII  VARIABLE
+  0x00  00100000  20   ' '              0xF0  00001000  08    .   a
+  0x01  11110000  F0    .               0xF1  00001001  09    .   b
+  0x02  00100100  24   '$'              0xF2  00000000  00    .   c
+  0x03  11110001  F1    .               0xF3  00000000  00    .
+  0x04  01110001  71   'q'
+  0x05  00000000  00    .
+  0x06  00110000  30   '0'
+  0x07  11110010  F2    .
+  0x08  11110000  F0    .
+  0x09  00000000  00    .
+  0x0A  00000000  00    .
+  0x0B  00000000  00    .
+
+------------------------------------------------------------------------------------------
+ INSTRUCTION 4 | PC = 0x06 | IR = 0011 00 00 11110010 = 0x30F2 | STORE R0, [0xF2]
+------------------------------------------------------------------------------------------
+  CLK  PHASE    BUS: CTRL   ADDR  DATA   MICRO-OPERATIONS
+  013  FETCH         READ   0x06  0x30   MAR<-PC, MDR<-RAM[MAR], IR[15:8]<-MDR, PC<-PC+1
+  014  FETCH         READ   0x07  0xF2   MAR<-PC, MDR<-RAM[MAR], IR[7:0]<-MDR,  PC<-PC+1
+  015  DECODE        IDLE   ----  ----   opcode=0011 (STORE)  ra=00  rb=00  imm8=11110010
+  016  EXECUTE       WRITE  0xF2  0x48   MAR<-0xF2, MDR<-R0, RAM[MAR]<-MDR
+
+  CPU STATE after this instruction
+  SPECIAL-PURPOSE REGISTERS               GENERAL-PURPOSE REGISTERS (bin, hex, dec)
+    PC  = 00001000         0x08*          R0 = 01001000  0x48   72
+    IR  = 0011000011110010 0x30F2*        R1 = 00001001  0x09    9
+    MAR = 11110010         0xF2*          R2 = 00000000  0x00    0
+    MDR = 01001000         0x48*          R3 = 00000000  0x00    0
+  ALU   : not used by this instruction
+  FLAGS : Z = 0   N = 0      CLOCK: 16 cycles
+
+  RAM after this instruction
+  CODE AREA                             DATA AREA
+  ADDR  BINARY    HEX  ASCII            ADDR  BINARY    HEX  ASCII  VARIABLE
+  0x00  00100000  20   ' '              0xF0  00001000  08    .   a
+  0x01  11110000  F0    .               0xF1  00001001  09    .   b
+  0x02  00100100  24   '$'              0xF2  01001000  48*  'H'  c
+  0x03  11110001  F1    .               0xF3  00000000  00    .
+  0x04  01110001  71   'q'
+  0x05  00000000  00    .
+  0x06  00110000  30   '0'
+  0x07  11110010  F2    .
+  0x08  11110000  F0    .
+  0x09  00000000  00    .
+  0x0A  00000000  00    .
+  0x0B  00000000  00    .
+
+------------------------------------------------------------------------------------------
+ INSTRUCTION 5 | PC = 0x08 | IR = 1111 00 00 00000000 = 0xF000 | HALT
+------------------------------------------------------------------------------------------
+  CLK  PHASE    BUS: CTRL   ADDR  DATA   MICRO-OPERATIONS
+  017  FETCH         READ   0x08  0xF0   MAR<-PC, MDR<-RAM[MAR], IR[15:8]<-MDR, PC<-PC+1
+  018  FETCH         READ   0x09  0x00   MAR<-PC, MDR<-RAM[MAR], IR[7:0]<-MDR,  PC<-PC+1
+  019  DECODE        IDLE   ----  ----   opcode=1111 (HALT)  ra=00  rb=00  imm8=00000000
+  020  EXECUTE       IDLE   ----  ----   stop the clock (PC stays on HALT)
+
+  CPU STATE after this instruction
+  SPECIAL-PURPOSE REGISTERS               GENERAL-PURPOSE REGISTERS (bin, hex, dec)
+    PC  = 00001000         0x08           R0 = 01001000  0x48   72
+    IR  = 1111000000000000 0xF000*        R1 = 00001001  0x09    9
+    MAR = 00001001         0x09*          R2 = 00000000  0x00    0
+    MDR = 00000000         0x00*          R3 = 00000000  0x00    0
+  ALU   : not used by this instruction
+  FLAGS : Z = 0   N = 0      CLOCK: 20 cycles     >>> CPU HALTED
+
+  RAM after this instruction
+  CODE AREA                             DATA AREA
+  ADDR  BINARY    HEX  ASCII            ADDR  BINARY    HEX  ASCII  VARIABLE
+  0x00  00100000  20   ' '              0xF0  00001000  08    .   a
+  0x01  11110000  F0    .               0xF1  00001001  09    .   b
+  0x02  00100100  24   '$'              0xF2  01001000  48   'H'  c
+  0x03  11110001  F1    .               0xF3  00000000  00    .
+  0x04  01110001  71   'q'
+  0x05  00000000  00    .
+  0x06  00110000  30   '0'
+  0x07  11110010  F2    .
+  0x08  11110000  F0    .
+  0x09  00000000  00    .
+  0x0A  00000000  00    .
+  0x0B  00000000  00    .
+
+==========================================================================================
+ RESULT  c = RAM[0xF2] = 01001000 = 0x48 = 72 = 'H'   expected 72 -> PASS
+         5 instructions, 20 clock cycles
+==========================================================================================
+
+SUMMARY
+  [PASS] ADD two numbers  (c = a + b)
+  [PASS] MULTIPLY two numbers  (c = a * b)
