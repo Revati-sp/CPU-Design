@@ -1,7 +1,6 @@
-__pycache__/
-*.py[cod]
-.venv/
-venv/
+# build output
+minicpu
+build/
+*.o
+*.zip
 .DS_Store
-*.hex
-/factorial
